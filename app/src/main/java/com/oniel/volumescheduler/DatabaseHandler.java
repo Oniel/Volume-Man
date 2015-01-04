@@ -1,9 +1,12 @@
 package com.oniel.volumescheduler;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /*
@@ -76,13 +79,115 @@ public class DatabaseHandler extends SQLiteOpenHelper{
         onCreate(db);
     }
 
-    /* */
-    public void getAllRows(){
+    public int getRowsCount() {
+        int count;
+        String countQuery = "SELECT  * FROM " + TABLE_VOLUMESETTINGS;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+        count = cursor.getCount();
+        cursor.close();
+        return count;
+    }
 
+    /* */
+    public List<SettingObject> getAllRows(){
+        List<SettingObject> settingsList = new ArrayList<SettingObject>();
+        String sql = "SELECT * FROM " + TABLE_VOLUMESETTINGS + " ORDER BY " + COL_TITLE + " ASC;";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(sql, null); //cursor is basically resultset
+
+        if(cursor.moveToFirst()) {
+            do {
+                SettingObject settingObject = new SettingObject();
+                settingObject.setId(cursor.getInt(0));
+                settingObject.setTitle(cursor.getString(1));
+                settingObject.setFromHour(cursor.getInt(2));
+                settingObject.setFromMin(cursor.getInt(3));
+                settingObject.setToHour(cursor.getInt(4));
+                settingObject.setToMin(cursor.getInt(5));
+                settingObject.setTimeFrame(cursor.getString(6));
+                settingObject.setDaysofweek(cursor.getString(7));
+                settingObject.setPhone(cursor.getInt(8));
+                settingObject.setNotification(cursor.getInt(9));
+                settingObject.setFeedback(cursor.getInt(10));
+                settingObject.setMedia(cursor.getInt(11));
+                settingObject.setPhoneVibration(cursor.getInt(12));
+                settingObject.setNotificationVibration(cursor.getInt(13));
+                settingObject.setFeedbackVibration(cursor.getInt(14));
+                settingObject.setMediaVibration(cursor.getInt(15));
+                settingsList.add(settingObject);
+            } while (cursor.moveToNext());
+        }
+        return settingsList;
+    }
+
+    public boolean rowExistence(String _title){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sql = "SELECT COUNT(*) AS FROM " + TABLE_VOLUMESETTINGS + " WHERE title='" + _title + "';";
+        Cursor cursor = db.rawQuery(sql, null);
+        if(cursor.getInt(0) == 0) return false;
+        else return true;
     }
 
     public void addRow(SettingObject settingObject){
+        ContentValues values = new ContentValues();
+        values.put(COL_TITLE, settingObject.getTitle());
+        values.put(COL_FROM_HOUR, settingObject.getFromHour());
+        values.put(COL_FROM_MIN, settingObject.getFromMin());
+        values.put(COL_TO_HOUR, settingObject.getToHour());
+        values.put(COL_TO_MIN, settingObject.getToMin());
+        values.put(COL_TIMEFRAME, settingObject.getTimeFrame());
+        values.put(COL_DAYSOFWEEK, settingObject.getDaysofweek());
+        values.put(COL_PHONE, settingObject.getPhone());
+        values.put(COL_PHONE_VIBRATE, settingObject.getPhoneVibration());
+        values.put(COL_NOTIFICATION, settingObject.getNotification());
+        values.put(COL_NOTIFICATION_VIBRATE, settingObject.getNotificationVibration());
+        values.put(COL_FEEDBACK, settingObject.getFeedback());
+        values.put(COL_FEEDBACK_VIBRATE, settingObject.getFeedbackVibration());
+        values.put(COL_MEDIA, settingObject.getMedia());
+        values.put(COL_MEDIA_VIBRATE, settingObject.getMediaVibration());
 
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.insert(TABLE_VOLUMESETTINGS, null, values);
+        db.close();
+    }
+
+    public int updateRow(SettingObject settingObject){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_TITLE, settingObject.getTitle());
+        values.put(COL_FROM_HOUR, settingObject.getFromHour());
+        values.put(COL_FROM_MIN, settingObject.getFromMin());
+        values.put(COL_TO_HOUR, settingObject.getToHour());
+        values.put(COL_TO_MIN, settingObject.getToMin());
+        values.put(COL_TIMEFRAME, settingObject.getTimeFrame());
+        values.put(COL_DAYSOFWEEK, settingObject.getDaysofweek());
+        values.put(COL_PHONE, settingObject.getPhone());
+        values.put(COL_PHONE_VIBRATE, settingObject.getPhoneVibration());
+        values.put(COL_NOTIFICATION, settingObject.getNotification());
+        values.put(COL_NOTIFICATION_VIBRATE, settingObject.getNotificationVibration());
+        values.put(COL_FEEDBACK, settingObject.getFeedback());
+        values.put(COL_FEEDBACK_VIBRATE, settingObject.getFeedbackVibration());
+        values.put(COL_MEDIA, settingObject.getMedia());
+        values.put(COL_MEDIA_VIBRATE, settingObject.getMediaVibration());
+        // updating row
+        return db.update(TABLE_VOLUMESETTINGS, values, COL_TITLE + " = ?",
+                new String[] { String.valueOf(settingObject.getTitle()) });
+    }
+
+    public void deleteRow(SettingObject settingObject){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String[] whereArgs = new String[] { settingObject.getTitle() };
+        db.delete( TABLE_VOLUMESETTINGS, COL_TITLE + " = ?", whereArgs);
+        db.close();
+    }
+
+    /* */
+    public void deleteAllRows(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE * FROM " + TABLE_VOLUMESETTINGS);
+        db.close();
     }
 
 
