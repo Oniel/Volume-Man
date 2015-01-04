@@ -1,3 +1,10 @@
+/*
+********************************
+* Author: Oniel Toledo
+* Created: 01.03.2015
+* Description: database modification handler (handler)
+* ******************************
+*/
 package com.oniel.volumescheduler;
 
 import android.content.ContentValues;
@@ -9,13 +16,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
-********************************
-* Author: Oniel Toledo
-* Created: 01.03.2015
-* Description: database modification handler (handler)
-* ******************************
-*/
 public class DatabaseHandler extends SQLiteOpenHelper{
     /* database information */
     private static final int DATABASE_VERSION = 1;
