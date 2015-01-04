@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Volume Scheduler</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- menu title strings -->
+    <string name="menu_about">about</string>
+    <string name="menu_help">help</string>
+    <string name="menu_donate">feed the developer</string>
+    <string name="menu_settings">settings</string>
+    <!-- menu item strings -->
+
+
+    <!-- buttons -->
+    <string name="btn_cancel">cancel</string>
+    <string name="btn_apply">apply</string>
+    <string name="btn_new_setting">Create A New Setting</string>
+    <string name="btn_change_default">Default Settings</string>
+    <!-- days of the week -->
+    <string name="dow_mon">mon</string>
+    <string name="dow_tues">tues</string>
+    <string name="dow_wed">wed</string>
+    <string name="dow_thurs">thurs</string>
+    <string name="dow_fri">fri</string>
+    <string name="dow_sat">sat</string>
+    <string name="dow_sun">sun</string>
+    <string name="title_activity_default_page">DefaultPage</string>
+    <string name="title_activity_setting_page">SettingPage</string>
+
+</resources>
