@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -98,6 +99,42 @@ public class MainPage extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    //handles data returned from another activity
+    public void onActivityResult(int requestCode, int resultCode, Intent intent)
+    {
+        //if return was from 'change default' activity
+        if (resultCode == RequestHandler.REQ_DEFAULT) {
+            System.out.println("Change Default Setting Call");
+
+        }
+        //values returned for creating a new setting
+        else if (resultCode == RequestHandler.REQ_NEW_SETTING) {
+           /*
+                create system service request
+            */
+            System.out.println("New Setting Call");
+
+            SettingObject settingObject = createSettingObjectFromIntent(intent);
+            db.addRow(settingObject); // add row to the database
+            updateListView(); //regets rows from db and refills listview
+        }
+        //if returning values to update for existing setting
+        else if (resultCode == RequestHandler.REQ_UPDATE_SETTING) {
+            /*
+                delete old system service request
+                create a new system service request
+             */
+            System.out.println("Update Setting Call");
+            SettingObject settingObject = createSettingObjectFromIntent(intent);
+            //FIXME updateRow is not updating if the name of the title has been changed (obviously, because new name isn't in row) handle this
+            db.updateRow(settingObject); // add row to the database
+            updateListView(); //re-gets rows from db and refills listview
+        } else if (resultCode == RequestHandler.REQ_NO_RESULT){
+            Toast.makeText(this, "no setting was added", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     /* additional methods */
     public void updateListView(){
         System.out.println("Started: updateListView()");
@@ -106,5 +143,25 @@ public class MainPage extends ActionBarActivity {
         listView.setAdapter(adapter); //populate the listView with the list of settings in adapter
         //note: adapter handles adding/removing adapters
 
+    }
+
+    private SettingObject createSettingObjectFromIntent(Intent intent){
+        SettingObject settingObject = new SettingObject();
+        settingObject.setTitle(intent.getStringExtra(RequestHandler.RET_TITLE));
+        settingObject.setFromHour(intent.getIntExtra(RequestHandler.RET_FROM_HOURS, 0));
+        settingObject.setFromMin(intent.getIntExtra(RequestHandler.RET_FROM_MINS, 0));
+        settingObject.setToHour(intent.getIntExtra(RequestHandler.RET_TO_HOURS, 0));
+        settingObject.setToMin(intent.getIntExtra(RequestHandler.RET_TO_MINS, 0));
+        settingObject.setTimeFrame(intent.getStringExtra(RequestHandler.RET_TIMEFRAME));//later let updateSetting handle this
+        settingObject.setDaysofweek(intent.getStringExtra(RequestHandler.RET_DAYSOFWEEK));
+        settingObject.setPhone(intent.getIntExtra(RequestHandler.RET_PHONE, 0));
+        settingObject.setNotification(intent.getIntExtra(RequestHandler.RET_NOTIFICATION, 0));
+        settingObject.setFeedback(intent.getIntExtra(RequestHandler.RET_FEEDBACK, 0));
+        settingObject.setMedia(intent.getIntExtra(RequestHandler.RET_MEDIA, 0));
+        settingObject.setPhoneVibration(intent.getIntExtra(RequestHandler.RET_PHONE_VIBRATION, 0));
+        settingObject.setNotificationVibration(intent.getIntExtra(RequestHandler.RET_NOTIFICATION_VIBRATION, 0));
+        settingObject.setFeedbackVibration(intent.getIntExtra(RequestHandler.RET_FEEDBACK_VIBRATION, 0));
+        settingObject.setMediaVibration(intent.getIntExtra(RequestHandler.RET_MEDIA_VIBRATION, 0));
+        return settingObject;
     }
 }
