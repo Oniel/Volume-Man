@@ -27,7 +27,7 @@
             android:layout_weight="1"
             android:layout_height="fill_parent"
             android:text="@string/btn_change_default"
-            android:id="@+id/btn_change_default"
+            android:id="@+id/btn_default"
         />
     </LinearLayout>
 

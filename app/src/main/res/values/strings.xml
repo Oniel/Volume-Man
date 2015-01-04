@@ -12,6 +12,9 @@
     <string name="menu_settings">settings</string>
     <!-- menu item strings -->
 
+    <!-- list item strings-->
+    <string name="listItem_enabled">enabled</string>
+    <string name="listItem_disabled">disabled</string>
 
     <!-- buttons -->
     <string name="btn_cancel">cancel</string>

@@ -1,5 +1,3 @@
-package com.oniel.volumescheduler;
-
 /*
 ********************************
 * Author: Oniel Toledo
@@ -7,6 +5,8 @@ package com.oniel.volumescheduler;
 * Description: Object class for a single setting (object)
 * ******************************
 */
+package com.oniel.volumescheduler;
+
 public class SettingObject {
     /* object attributes */
     private int id;
