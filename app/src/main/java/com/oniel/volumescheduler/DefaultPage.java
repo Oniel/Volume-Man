@@ -11,17 +11,49 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 
 public class DefaultPage extends ActionBarActivity {
-
+    /* globals */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Button cancel_btn;
+        Button apply_btn;
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_default_page);
+
+        /* get default sound settings (if any) */
+
+        /* adjust icon and spinner values */
+
+        /* handle 'apply' button click - perform settings changes */
+        apply_btn = (Button) findViewById(R.id.cD_btn_apply);
+        apply_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeDefaultSetting();
+                finish();
+            }
+        });
+
+        /* handle 'cancel' button click - do nothing go back to main page */
+        cancel_btn = (Button) findViewById(R.id.cD_btn_cancel);
+        cancel_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
+    /* perform default volume settings change */
+    private void changeDefaultSetting(){
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

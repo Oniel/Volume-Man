@@ -51,4 +51,9 @@
     <string name="dow_sat">sat</string>
     <string name="dow_sun">sun</string>
 
+    <!-- icon descriptions -->
+    <string name="icon_phone">phone icon</string>
+    <string name="icon_notification">notification icon</string>
+    <string name="icon_feedback">feedback icon</string>
+    <string name="icon_media">media icon</string>
 </resources>
