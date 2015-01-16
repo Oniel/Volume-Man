@@ -8,12 +8,15 @@
 package com.oniel.volumescheduler;
 
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 
 public class DefaultSettingHandler {
 
     private SharedPreferences sharedPref;
 
     /* shared preference keys */
+    private final static String ALREADY_SET = "ALREADYSET";
+
     private final static String PHONE_KEY = "PHONE";
     private final static String NOTIFICATION_KEY = "NOTIFICATION";
     private final static String FEEDBACK_KEY = "FEEDBACK";
@@ -24,11 +27,17 @@ public class DefaultSettingHandler {
     private final static String FEEDBACK_VIBRATION_KEY = "FEEDBACKVIBRATION";
     private final static String MEDIA_VIBRATIONA_KEY = "MEDIAVIBRATION";
 
+    public DefaultSettingHandler(){}
+
+    /* verification that the default settings have been set, if false default settings have never been
+    * set and therefore must be applied - not too sure how i should handle this... */
+    public boolean defaultSettingsExistance(){ return sharedPref.getBoolean(ALREADY_SET, false);}
+
     /* getters */
-    public int getPhone(){return sharedPref.getInt(PHONE_KEY,-1);}
-    public int getNotification(){return sharedPref.getInt(NOTIFICATION_KEY, -1)}
-    public int getFeedback(){return sharedPref.getInt(FEEDBACK_KEY,-1);}
-    public int getMedia(){return sharedPref.getInt(MEDIA_KEY,-1);}
+    public int getPhone(){return sharedPref.getInt(PHONE_KEY, AudioManager.STREAM_RING/2);} //if doesn't exist set to half
+    public int getNotification(){return sharedPref.getInt(NOTIFICATION_KEY, AudioManager.STREAM_NOTIFICATION/2);}
+    public int getFeedback(){return sharedPref.getInt(FEEDBACK_KEY,AudioManager.STREAM_SYSTEM/2);}
+    public int getMedia(){return sharedPref.getInt(MEDIA_KEY,AudioManager.STREAM_MUSIC/2);}
 
     public int getPhoneVibrate(){return sharedPref.getInt(PHONE_VIBRATION_KEY,-1);}
     public int getNotificationVibrate(){return sharedPref.getInt(NOTIFICATION_VIBRATION_KEY,-1);}
@@ -39,6 +48,7 @@ public class DefaultSettingHandler {
     public void setDefaultSound(int phone, int phone_v, int notification, int notification_v,
                                 int feedback, int feedback_v, int media, int media_v){
         SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(ALREADY_SET, true);
         editor.putInt(PHONE_KEY, phone);
         editor.putInt(NOTIFICATION_KEY, notification);
         editor.putInt(FEEDBACK_KEY, feedback);
