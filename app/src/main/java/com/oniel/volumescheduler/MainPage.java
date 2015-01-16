@@ -59,7 +59,7 @@ public class MainPage extends ActionBarActivity {
         btn_newSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, DefaultPage.class);
+                Intent intent = new Intent(context, SettingPage.class);
                 intent.putExtra(RequestHandler.REQUEST_CODE, RequestHandler.REQ_NEW_SETTING);
                 startActivityForResult(intent, RequestHandler.REQ_NEW_SETTING); //request code: 2
             }
@@ -70,8 +70,8 @@ public class MainPage extends ActionBarActivity {
         btn_default.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, SettingPage.class);
-                startActivity(intent);
+                Intent intent = new Intent(context, DefaultPage.class);
+                startActivity(intent); //start default activities page
             }
         });
     }
@@ -136,7 +136,7 @@ public class MainPage extends ActionBarActivity {
     }
 
     /* additional methods */
-    public void updateListView(){
+    private void updateListView(){
         System.out.println("Started: updateListView()");
         settingsList = db.getAllRows(); //get all database data
         adapter = new ListAdapterHandler(this, settingsList, context); //create an adapter with the list of settings

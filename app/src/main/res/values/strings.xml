@@ -3,7 +3,7 @@
 
     <string name="app_name">Volume Scheduler</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">settings</string>
 
     <!-- menu title strings -->
     <string name="menu_about">about</string>
@@ -19,9 +19,30 @@
     <!-- buttons -->
     <string name="btn_cancel">cancel</string>
     <string name="btn_apply">apply</string>
-    <string name="btn_new_setting">Create A New Setting</string>
-    <string name="btn_change_default">Default Settings</string>
-    <!-- days of the week -->
+    <string name="btn_new_setting">create a new setting</string>
+    <string name="btn_change_default">default settings</string>
+
+    <!-- TODO where am i using this? did i make this?-->
+    <string name="title_activity_default_page">DefaultPage</string>
+    <string name="title_activity_setting_page">SettingPage</string>
+
+    <!-- volume preference titles -->
+    <string name="label_volPreferences">volume preferences</string>
+    <string name="label_phone">ringtone</string>
+    <string name="label_notification">notifications</string>
+    <string name="label_feedback">touch feedback &amp; system</string>
+    <string name="label_media">music, video, games and other media</string>
+    <string name="label_vibrate">vibration</string>
+
+    <!-- setting title -->
+    <string name="label_title">title</string>
+
+    <!-- time frame preference titles -->
+    <string name="label_from">starting time</string>
+    <string name="label_to">ending time</string>
+
+    <!-- day of week repetion preference titles-->
+    <string name="label_repeat">repeat</string>
     <string name="dow_mon">mon</string>
     <string name="dow_tues">tues</string>
     <string name="dow_wed">wed</string>
@@ -29,7 +50,5 @@
     <string name="dow_fri">fri</string>
     <string name="dow_sat">sat</string>
     <string name="dow_sun">sun</string>
-    <string name="title_activity_default_page">DefaultPage</string>
-    <string name="title_activity_setting_page">SettingPage</string>
 
 </resources>
