@@ -23,7 +23,7 @@ import java.util.List;
 
 public class MainPage extends ActionBarActivity {
 
-
+    public static Context applicationContext;
 
     /* global objects */
     private final Context context = this;
@@ -41,7 +41,7 @@ public class MainPage extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
-
+        applicationContext = getApplicationContext();
         /* initialize the list view */
         listView = (ListView) findViewById(R.id.main_list_view);
         listView.setClickable(true); //short click for item edit
@@ -164,4 +164,6 @@ public class MainPage extends ActionBarActivity {
         settingObject.setMediaVibration(intent.getIntExtra(RequestHandler.RET_MEDIA_VIBRATION, 0));
         return settingObject;
     }
+
+    public static Context getAppContext(){return applicationContext;}
 }
