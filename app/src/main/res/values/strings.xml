@@ -56,4 +56,11 @@
     <string name="icon_notification">notification icon</string>
     <string name="icon_feedback">feedback icon</string>
     <string name="icon_media">media icon</string>
+
+    <!-- toasts -->
+    <string name="toast_default_set">default settings updated</string>
+    <string name="toast_setting_created">setting created</string>
+    <string name="toast_setting_updated">setting updated</string>
+    <string name="toast_setting_deleted">setting deleted</string>
+    <string name="toast_no_change">no changes</string>
 </resources>

@@ -29,4 +29,15 @@ public class RequestHandler {
     public final static String RET_FEEDBACK_VIBRATION = "FEEDBACKVIBRATION";
     public final static String RET_MEDIA = "MEDIA";
     public final static String RET_MEDIA_VIBRATION = "MEDIAVIBRATION";
+
+    /* shared preference keys */
+    public final static String ALREADY_SET = "ALREADYSET";
+    public final static String PHONE_KEY = "PHONE";
+    public final static String NOTIFICATION_KEY = "NOTIFICATION";
+    public final static String FEEDBACK_KEY = "FEEDBACK";
+    public final static String MEDIA_KEY = "MEDIA";
+    public final static String PHONE_VIBRATION_KEY = "PHONEVIBRATION";
+    public final static String NOTIFICATION_VIBRATION_KEY = "NOTIFICATIONVIBRATION";
+    public final static String FEEDBACK_VIBRATION_KEY = "FEEDBACKVIBRATION";
+    public final static String MEDIA_VIBRATION_KEY = "MEDIAVIBRATION";
 }

@@ -9,7 +9,6 @@ package com.oniel.volumescheduler;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -19,13 +18,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 
 public class DefaultPage extends ActionBarActivity {
     /* globals */
-    AudioManager audioManager; // device audio stream 
+    AudioManager audioManager; // device audio stream
     SharedPreferences sharedPref; //this activities shared preferences file calling card
-    
+    private Context context = this;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Button cancel_btn;
@@ -34,31 +34,31 @@ public class DefaultPage extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_default_page);
 
-        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        initDefaultSharedPref();
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         /* set seekbar progress */
         //phone
         ImageView ic_phone = (ImageView) findViewById(R.id.cD_ic_phone);
-        SeekBar s_phone = (SeekBar) findViewById(R.id.cD_sb_phone);
+        final SeekBar s_phone = (SeekBar) findViewById(R.id.cD_sb_phone);
         s_phone.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_RING));
         s_phone.setProgress(getPhone());
         initSeekBarImageView(s_phone, ic_phone, R.drawable.ic_phone_vol, R.drawable.ic_phone_off);
         //notifications
         ImageView ic_notification = (ImageView) findViewById(R.id.cD_ic_notification);
-        SeekBar s_notification = (SeekBar) findViewById(R.id.cD_sb_notification);
+        final SeekBar s_notification = (SeekBar) findViewById(R.id.cD_sb_notification);
         s_notification.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION));
         s_notification.setProgress(getNotification());
         initSeekBarImageView(s_notification, ic_notification, R.drawable.ic_notification_vol, R.drawable.ic_notification_off);
         //feedback
         ImageView ic_feedback = (ImageView) findViewById(R.id.cD_ic_feedback);
-        SeekBar s_feedback = (SeekBar) findViewById(R.id.cD_sb_feedback);
+        final SeekBar s_feedback = (SeekBar) findViewById(R.id.cD_sb_feedback);
         s_feedback.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM));
         s_feedback.setProgress(getFeedback());
         initSeekBarImageView(s_feedback, ic_feedback, R.drawable.ic_feedback_vol, R.drawable.ic_feedback_off);
         //media
         ImageView ic_media = (ImageView) findViewById(R.id.cD_ic_media);
-        SeekBar s_media = (SeekBar) findViewById(R.id.cD_sb_media);
+        final SeekBar s_media = (SeekBar) findViewById(R.id.cD_sb_media);
         s_media.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
         s_media.setProgress(getMedia());
         initSeekBarImageView(s_media, ic_media, R.drawable.ic_media_vol, R.drawable.ic_media_off);
@@ -69,7 +69,14 @@ public class DefaultPage extends ActionBarActivity {
         apply_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeDefaultSetting();
+                setDefaultSound(
+                        s_phone.getProgress(),
+                        s_notification.getProgress(),
+                        s_feedback.getProgress(),
+                        s_media.getProgress()
+                );
+                //TODO run volume update scheduler (in case no setting set)
+                Toast.makeText(context, R.string.toast_default_set, Toast.LENGTH_SHORT).show();
                 finish();
             }
         });
@@ -79,14 +86,10 @@ public class DefaultPage extends ActionBarActivity {
         cancel_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(context, R.string.toast_no_change, Toast.LENGTH_SHORT).show();
                 finish();
             }
         });
-    }
-
-    /* perform default volume settings change */
-    private void changeDefaultSetting(){
-        //TODO change shared preferences file with updated settings
     }
 
     /* set seekbar listener and image update*/
@@ -137,48 +140,38 @@ public class DefaultPage extends ActionBarActivity {
     }
 
     //------------------------------------------------------------------------
-    /* default setting shared preferenes attributes and methods */
+    // default setting shared preferences attributes and methods
 
-    /* shared preference keys */
-    private final static String ALREADY_SET = "ALREADYSET";
-    private final static String PHONE_KEY = "PHONE";
-    private final static String NOTIFICATION_KEY = "NOTIFICATION";
-    private final static String FEEDBACK_KEY = "FEEDBACK";
-    private final static String MEDIA_KEY = "MEDIA";
-    private final static String PHONE_VIBRATION_KEY = "PHONEVIBRATION";
-    private final static String NOTIFICATION_VIBRATION_KEY = "NOTIFICATIONVIBRATION";
-    private final static String FEEDBACK_VIBRATION_KEY = "FEEDBACKVIBRATION";
-    private final static String MEDIA_VIBRATIONA_KEY = "MEDIAVIBRATION";
-    
+    /* initialize default settings shared preferences*/
+    public void initDefaultSharedPref(){sharedPref = this.getPreferences(Context.MODE_PRIVATE); }
+
     /* verification that the default settings have been set, if false default settings have never been
     * set and therefore must be applied - not too sure how i should handle this... */
-    public boolean defaultSettingsExistance(){ return sharedPref.getBoolean(ALREADY_SET, false);}
+    public boolean defaultSettingsExistance(){ return sharedPref.getBoolean(RequestHandler.ALREADY_SET, false);}
 
     /* getters */
-    public int getPhone(){return sharedPref.getInt(PHONE_KEY,0);} //if doesn't exist set to half
-    public int getNotification(){return sharedPref.getInt(NOTIFICATION_KEY, 0);}
-    public int getFeedback(){return sharedPref.getInt(FEEDBACK_KEY,0);}
-    public int getMedia(){return sharedPref.getInt(MEDIA_KEY,0);}
+    public int getPhone(){return sharedPref.getInt(RequestHandler.PHONE_KEY,audioManager.getStreamMaxVolume(AudioManager.STREAM_RING)/2);}
+    public int getNotification(){return sharedPref.getInt(RequestHandler.NOTIFICATION_KEY, audioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION)/2);}
+    public int getFeedback(){return sharedPref.getInt(RequestHandler.FEEDBACK_KEY,audioManager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM)/2);}
+    public int getMedia(){return sharedPref.getInt(RequestHandler.MEDIA_KEY,audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)/2);}
 
-    //not currently implemented
-    public int getPhoneVibrate(){return sharedPref.getInt(PHONE_VIBRATION_KEY,-1);}
-    public int getNotificationVibrate(){return sharedPref.getInt(NOTIFICATION_VIBRATION_KEY,-1);}
-    public int getFeedbackVibrate(){return sharedPref.getInt(FEEDBACK_VIBRATION_KEY,-1);}
-    public int getMediaVibrate(){return sharedPref.getInt(MEDIA_VIBRATIONA_KEY,-1);}
+    //TODO not currently implemented
+    public int getPhoneVibrate(){return sharedPref.getInt(RequestHandler.PHONE_VIBRATION_KEY,0);}
+    public int getNotificationVibrate(){return sharedPref.getInt(RequestHandler.NOTIFICATION_VIBRATION_KEY,0);}
+    public int getFeedbackVibrate(){return sharedPref.getInt(RequestHandler.FEEDBACK_VIBRATION_KEY,0);}
+    public int getMediaVibrate(){return sharedPref.getInt(RequestHandler.MEDIA_VIBRATION_KEY,0);}
 
     /* setter */
-    public void setDefaultSound(int phone, int phone_v, int notification, int notification_v,
-                                int feedback, int feedback_v, int media, int media_v){
+    public void setDefaultSound(int phone, int notification, int feedback, int media){
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putBoolean(ALREADY_SET, true);
-        editor.putInt(PHONE_KEY, phone);
-        editor.putInt(NOTIFICATION_KEY, notification);
-        editor.putInt(FEEDBACK_KEY, feedback);
-        editor.putInt(MEDIA_KEY, media);
-        editor.putInt(PHONE_VIBRATION_KEY, phone_v);
-        editor.putInt(NOTIFICATION_VIBRATION_KEY, notification_v);
-        editor.putInt(FEEDBACK_VIBRATION_KEY, feedback_v);
-        editor.putInt(MEDIA_VIBRATIONA_KEY, media_v);
+        editor.putInt(RequestHandler.PHONE_KEY, phone);
+        editor.putInt(RequestHandler.NOTIFICATION_KEY, notification);
+        editor.putInt(RequestHandler.FEEDBACK_KEY, feedback);
+        editor.putInt(RequestHandler.MEDIA_KEY, media);
+//        editor.putInt(PHONE_VIBRATION_KEY, phone_v);
+//        editor.putInt(NOTIFICATION_VIBRATION_KEY, notification_v);
+//        editor.putInt(FEEDBACK_VIBRATION_KEY, feedback_v);
+//        editor.putInt(MEDIA_VIBRATION_KEY, media_v);
         editor.commit();
     }
 }
