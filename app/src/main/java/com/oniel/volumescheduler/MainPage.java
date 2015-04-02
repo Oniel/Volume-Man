@@ -22,9 +22,6 @@ import java.util.List;
 
 
 public class MainPage extends ActionBarActivity {
-
-    public static Context applicationContext;
-
     /* global objects */
     private final Context context = this;
     private ListView listView;
@@ -33,15 +30,15 @@ public class MainPage extends ActionBarActivity {
     public List<SettingObject> settingsList;
     public ListAdapterHandler adapter;
 
-    private Button btn_newSettings;
-    private Button btn_default;
-
     /* default methods */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
-        applicationContext = getApplicationContext();
+
+        Button btn_newSettings;
+        Button btn_default;
+
         /* initialize the list view */
         listView = (ListView) findViewById(R.id.main_list_view);
         listView.setClickable(true); //short click for item edit
@@ -115,7 +112,7 @@ public class MainPage extends ActionBarActivity {
             */
             System.out.println("New Setting Call");
 
-            SettingObject settingObject = createSettingObjectFromIntent(intent);
+            SettingObject settingObject = RequestHandler.createSettingObjectFromIntent(intent);
             db.addRow(settingObject); // add row to the database
             updateListView(); //regets rows from db and refills listview
         }
@@ -126,7 +123,7 @@ public class MainPage extends ActionBarActivity {
                 create a new system service request
              */
             System.out.println("Update Setting Call");
-            SettingObject settingObject = createSettingObjectFromIntent(intent);
+            SettingObject settingObject = RequestHandler.createSettingObjectFromIntent(intent);
             //FIXME updateRow is not updating if the name of the title has been changed (obviously, because new name isn't in row) handle this
             db.updateRow(settingObject); // add row to the database
             updateListView(); //re-gets rows from db and refills listview
@@ -145,25 +142,6 @@ public class MainPage extends ActionBarActivity {
 
     }
 
-    private SettingObject createSettingObjectFromIntent(Intent intent){
-        SettingObject settingObject = new SettingObject();
-        settingObject.setTitle(intent.getStringExtra(RequestHandler.RET_TITLE));
-        settingObject.setFromHour(intent.getIntExtra(RequestHandler.RET_FROM_HOURS, 0));
-        settingObject.setFromMin(intent.getIntExtra(RequestHandler.RET_FROM_MINS, 0));
-        settingObject.setToHour(intent.getIntExtra(RequestHandler.RET_TO_HOURS, 0));
-        settingObject.setToMin(intent.getIntExtra(RequestHandler.RET_TO_MINS, 0));
-        settingObject.setTimeFrame(intent.getStringExtra(RequestHandler.RET_TIMEFRAME));//later let updateSetting handle this
-        settingObject.setDaysofweek(intent.getStringExtra(RequestHandler.RET_DAYSOFWEEK));
-        settingObject.setPhone(intent.getIntExtra(RequestHandler.RET_PHONE, 0));
-        settingObject.setNotification(intent.getIntExtra(RequestHandler.RET_NOTIFICATION, 0));
-        settingObject.setFeedback(intent.getIntExtra(RequestHandler.RET_FEEDBACK, 0));
-        settingObject.setMedia(intent.getIntExtra(RequestHandler.RET_MEDIA, 0));
-        settingObject.setPhoneVibration(intent.getIntExtra(RequestHandler.RET_PHONE_VIBRATION, 0));
-        settingObject.setNotificationVibration(intent.getIntExtra(RequestHandler.RET_NOTIFICATION_VIBRATION, 0));
-        settingObject.setFeedbackVibration(intent.getIntExtra(RequestHandler.RET_FEEDBACK_VIBRATION, 0));
-        settingObject.setMediaVibration(intent.getIntExtra(RequestHandler.RET_MEDIA_VIBRATION, 0));
-        return settingObject;
-    }
 
-    public static Context getAppContext(){return applicationContext;}
+
 }

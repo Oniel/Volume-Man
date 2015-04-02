@@ -8,7 +8,7 @@
     <!-- menu title strings -->
     <string name="menu_about">about</string>
     <string name="menu_help">help</string>
-    <string name="menu_donate">feed the developer</string>
+    <string name="menu_donate">feed s developer</string>
     <string name="menu_settings">settings</string>
     <!-- menu item strings -->
 
@@ -22,7 +22,6 @@
     <string name="btn_new_setting">create a new setting</string>
     <string name="btn_change_default">default settings</string>
 
-    <!-- TODO where am i using this? did i make this?-->
     <string name="title_activity_default_page">DefaultPage</string>
     <string name="title_activity_setting_page">SettingPage</string>
 
@@ -32,24 +31,24 @@
     <string name="label_notification">notifications</string>
     <string name="label_feedback">touch feedback &amp; system</string>
     <string name="label_media">music, video, games and other media</string>
-    <string name="label_vibrate">vibration</string>
+    <string name="label_vibrate">Vibration</string>
 
     <!-- setting title -->
     <string name="label_title">title</string>
 
     <!-- time frame preference titles -->
-    <string name="label_from">starting time</string>
-    <string name="label_to">ending time</string>
+    <string name="label_from">start time</string>
+    <string name="label_to">end time</string>
 
     <!-- day of week repetion preference titles-->
     <string name="label_repeat">repeat</string>
-    <string name="dow_mon">mon</string>
-    <string name="dow_tues">tues</string>
-    <string name="dow_wed">wed</string>
-    <string name="dow_thurs">thurs</string>
-    <string name="dow_fri">fri</string>
-    <string name="dow_sat">sat</string>
-    <string name="dow_sun">sun</string>
+    <string name="dow_mon">Mo</string>
+    <string name="dow_tues">Tu</string>
+    <string name="dow_wed">We</string>
+    <string name="dow_thurs">Th</string>
+    <string name="dow_fri">Fr</string>
+    <string name="dow_sat">Sa</string>
+    <string name="dow_sun">Su</string>
 
     <!-- icon descriptions -->
     <string name="icon_phone">phone icon</string>
@@ -63,4 +62,8 @@
     <string name="toast_setting_updated">setting updated</string>
     <string name="toast_setting_deleted">setting deleted</string>
     <string name="toast_no_change">no changes</string>
+
+    <string name="toast_silent">phone set to silent</string>
+    <string name="toast_vibrate">phone set to vibrate only</string>
+    <string name="toast_custom">phone volume set</string>
 </resources>

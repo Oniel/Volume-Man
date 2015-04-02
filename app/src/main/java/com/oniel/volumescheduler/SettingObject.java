@@ -2,7 +2,7 @@
 ********************************
 * Author: Oniel Toledo
 * Created: 01.03.2015
-* Description: Object class for a single setting (object)
+* Description: Object class for a single sound setting (object)
 * ******************************
 */
 package com.oniel.volumescheduler;
@@ -15,10 +15,11 @@ public class SettingObject {
     private int toHour, toMin;
     private String timeFrame;
     private String daysofweek;
-    private int phone, phoneVibration;
-    private int notification, notificationVibration;
-    private int feedback, feedbackVibration;
-    private int media, mediaVibration;
+    private int phone;
+    private int notification;
+    private int feedback;
+    private int media;
+    private boolean vibration;
 
     /* getters */
 
@@ -58,32 +59,21 @@ public class SettingObject {
         return phone;
     }
 
-    public int getPhoneVibration() {
-        return phoneVibration;
-    }
-
     public int getNotification() {
         return notification;
     }
 
-    public int getNotificationVibration() {
-        return notificationVibration;
-    }
 
     public int getFeedback() {
         return feedback;
-    }
-
-    public int getFeedbackVibration() {
-        return feedbackVibration;
     }
 
     public int getMedia() {
         return media;
     }
 
-    public int getMediaVibration() {
-        return mediaVibration;
+    public boolean getVibration() {
+        return vibration;
     }
 
     /* setters */
@@ -124,31 +114,19 @@ public class SettingObject {
         this.phone = phone;
     }
 
-    public void setPhoneVibration(int phoneVibration) {
-        this.phoneVibration = phoneVibration;
-    }
-
     public void setNotification(int notification) {
         this.notification = notification;
-    }
-
-    public void setNotificationVibration(int notificationVibration) {
-        this.notificationVibration = notificationVibration;
     }
 
     public void setFeedback(int feedback) {
         this.feedback = feedback;
     }
 
-    public void setFeedbackVibration(int feedbackVibration) {
-        this.feedbackVibration = feedbackVibration;
-    }
-
     public void setMedia(int media) {
         this.media = media;
     }
 
-    public void setMediaVibration(int mediaVibration) {
-        this.mediaVibration = mediaVibration;
+    public void setVibration(boolean vibration) {
+        this.vibration = vibration;
     }
 }

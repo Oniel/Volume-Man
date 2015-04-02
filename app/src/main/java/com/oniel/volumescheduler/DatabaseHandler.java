@@ -28,6 +28,7 @@ public class DatabaseHandler extends SQLiteOpenHelper{
     //table: VolumeSettings
     private static final String COL_ID = "id";
     private static final String COL_TITLE = "title";
+
     private static final String COL_FROM_HOUR = "from_hour";
     private static final String COL_FROM_MIN = "from_min";
     private static final String COL_TO_HOUR = "to_hour";
@@ -38,10 +39,7 @@ public class DatabaseHandler extends SQLiteOpenHelper{
     private static final String COL_NOTIFICATION = "notification";
     private static final String COL_FEEDBACK = "feedback";
     private static final String COL_MEDIA = "media";
-    private static final String COL_PHONE_VIBRATE = "phone_vibrate";
-    private static final String COL_NOTIFICATION_VIBRATE = "notification_vibrate";
-    private static final String COL_FEEDBACK_VIBRATE = "feedback_vibrate";
-    private static final String COL_MEDIA_VIBRATE = "media_vibrate";
+    private static final String COL_VIBRATION = "vibration";
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -63,10 +61,7 @@ public class DatabaseHandler extends SQLiteOpenHelper{
                 + COL_NOTIFICATION + " INTEGER, "
                 + COL_FEEDBACK + " INTEGER, "
                 + COL_MEDIA + " INTEGER,"
-                + COL_PHONE_VIBRATE + " INTEGER, "
-                + COL_NOTIFICATION_VIBRATE + " INTEGER, "
-                + COL_FEEDBACK_VIBRATE + " INTEGER, "
-                + COL_MEDIA_VIBRATE + " INTEGER"
+                + COL_VIBRATION + " INTEGER, "
                 + ")";
         db.execSQL(CREATE_VOLUMESETTINGS_TABLE);
     }
@@ -89,7 +84,7 @@ public class DatabaseHandler extends SQLiteOpenHelper{
         return count;
     }
 
-    /* */
+
     public List<SettingObject> getAllRows(){
         List<SettingObject> settingsList = new ArrayList<SettingObject>();
         String sql = "SELECT * FROM " + TABLE_VOLUMESETTINGS + " ORDER BY " + COL_TITLE + " ASC;";
@@ -112,10 +107,8 @@ public class DatabaseHandler extends SQLiteOpenHelper{
                 settingObject.setNotification(cursor.getInt(9));
                 settingObject.setFeedback(cursor.getInt(10));
                 settingObject.setMedia(cursor.getInt(11));
-                settingObject.setPhoneVibration(cursor.getInt(12));
-                settingObject.setNotificationVibration(cursor.getInt(13));
-                settingObject.setFeedbackVibration(cursor.getInt(14));
-                settingObject.setMediaVibration(cursor.getInt(15));
+                settingObject.setVibration(cursor.getInt(12)==1); //there is no boolean
+
                 settingsList.add(settingObject);
             } while (cursor.moveToNext());
         }
@@ -127,7 +120,7 @@ public class DatabaseHandler extends SQLiteOpenHelper{
         String sql = "SELECT COUNT(*) AS FROM " + TABLE_VOLUMESETTINGS + " WHERE title='" + _title + "';";
         Cursor cursor = db.rawQuery(sql, null);
         if(cursor.getInt(0) == 0) return false;
-        else return true;
+        return true;
     }
 
     public void addRow(SettingObject settingObject){
@@ -140,14 +133,10 @@ public class DatabaseHandler extends SQLiteOpenHelper{
         values.put(COL_TIMEFRAME, settingObject.getTimeFrame());
         values.put(COL_DAYSOFWEEK, settingObject.getDaysofweek());
         values.put(COL_PHONE, settingObject.getPhone());
-        values.put(COL_PHONE_VIBRATE, settingObject.getPhoneVibration());
         values.put(COL_NOTIFICATION, settingObject.getNotification());
-        values.put(COL_NOTIFICATION_VIBRATE, settingObject.getNotificationVibration());
         values.put(COL_FEEDBACK, settingObject.getFeedback());
-        values.put(COL_FEEDBACK_VIBRATE, settingObject.getFeedbackVibration());
         values.put(COL_MEDIA, settingObject.getMedia());
-        values.put(COL_MEDIA_VIBRATE, settingObject.getMediaVibration());
-
+        values.put(COL_VIBRATION, settingObject.getVibration());
         SQLiteDatabase db = this.getWritableDatabase();
         db.insert(TABLE_VOLUMESETTINGS, null, values);
         db.close();
@@ -164,13 +153,11 @@ public class DatabaseHandler extends SQLiteOpenHelper{
         values.put(COL_TIMEFRAME, settingObject.getTimeFrame());
         values.put(COL_DAYSOFWEEK, settingObject.getDaysofweek());
         values.put(COL_PHONE, settingObject.getPhone());
-        values.put(COL_PHONE_VIBRATE, settingObject.getPhoneVibration());
         values.put(COL_NOTIFICATION, settingObject.getNotification());
-        values.put(COL_NOTIFICATION_VIBRATE, settingObject.getNotificationVibration());
         values.put(COL_FEEDBACK, settingObject.getFeedback());
-        values.put(COL_FEEDBACK_VIBRATE, settingObject.getFeedbackVibration());
         values.put(COL_MEDIA, settingObject.getMedia());
-        values.put(COL_MEDIA_VIBRATE, settingObject.getMediaVibration());
+        values.put(COL_VIBRATION, settingObject.getVibration());
+
         // updating row
         return db.update(TABLE_VOLUMESETTINGS, values, COL_TITLE + " = ?",
                 new String[] { String.valueOf(settingObject.getTitle()) });
@@ -190,5 +177,6 @@ public class DatabaseHandler extends SQLiteOpenHelper{
         db.close();
     }
 
+    /* Default Settings Table */
 
 }

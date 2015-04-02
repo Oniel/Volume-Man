@@ -18,17 +18,18 @@
         </activity>
         <activity
             android:name=".DefaultPage"
+            android:parentActivityName=".MainPage"
             android:label="@string/title_activity_default_page" >
         </activity>
         <activity
             android:name=".SettingPage"
+            android:windowSoftInputMode="stateHidden"
+            android:parentActivityName=".MainPage"
             android:label="@string/title_activity_setting_page" >
         </activity>
-        <activity
-            android:name=".DefaultSettingHandler"
-            android:label="@string/title_activity_default_page" >
-        </activity>
-
     </application>
+
+    <!-- application permissions -->
+    <uses-permission android:name="android.permission.VIBRATE" />
 
 </manifest>

@@ -1,9 +1,18 @@
 package com.oniel.volumescheduler;
 
-/**
- * Created by oniel on 1/3/2015.
- */
+import android.content.Intent;
+
+/*
+********************************
+* Author: Oniel Toledo
+* Created: 01.03.2015
+* Description: Volume Scheduler Request Handler Class
+*               holds constant and check functions, everything is static- no need for instantiation
+* ******************************
+*/
 public class RequestHandler {
+
+    public final static String REQUEST_CODE = "REQUESTCODE";
 
     /* request codes */
     public static final int REQ_NO_RESULT = 0;
@@ -11,33 +20,50 @@ public class RequestHandler {
     public static final int REQ_NEW_SETTING = 2;
     public static final int REQ_UPDATE_SETTING = 3;
 
-    public final static String REQUEST_CODE = "REQUESTCODE";
+    /* keys */
+    public final static String TITLE = "TITLE";
+    public final static String START_HOUR = "FROMHOUR";
+    public final static String START_MIN = "FROMMIN";
+    public final static String END_HOUR = "TOHOUR";
+    public final static String END_MIN = "TOMIN";
+    public final static String TIMEFRAME = "TIMEFRAME";
+    public final static String DAYSOFWEEK = "DAYSOFWEEK";
 
-    /* data return keys*/
-    public final static String RET_TITLE = "TITLE";
-    public final static String RET_FROM_HOURS = "FROMHOURS";
-    public final static String RET_FROM_MINS = "FROMMINS";
-    public final static String RET_TO_HOURS = "TOHOURS";
-    public final static String RET_TO_MINS = "TOMINS";
-    public final static String RET_TIMEFRAME = "TIMEFRAME";
-    public final static String RET_DAYSOFWEEK = "DAYSOFWEEK";
-    public final static String RET_PHONE = "PHONE";
-    public final static String RET_PHONE_VIBRATION = "PHONEVIBRATION";
-    public final static String RET_NOTIFICATION = "NOTIFICATION";
-    public final static String RET_NOTIFICATION_VIBRATION = "NOTIFICATIONVIBRATION";
-    public final static String RET_FEEDBACK = "FEEDBACK";
-    public final static String RET_FEEDBACK_VIBRATION = "FEEDBACKVIBRATION";
-    public final static String RET_MEDIA = "MEDIA";
-    public final static String RET_MEDIA_VIBRATION = "MEDIAVIBRATION";
+    public final static String PHONE = "PHONE";
+    public final static String NOTIFICATION = "NOTIFICATION";
+    public final static String FEEDBACK = "FEEDBACK";
+    public final static String MEDIA = "MEDIA";
+    public final static String VIBRATION = "VIBRATION";
 
-    /* shared preference keys */
+
     public final static String ALREADY_SET = "ALREADYSET";
-    public final static String PHONE_KEY = "PHONE";
-    public final static String NOTIFICATION_KEY = "NOTIFICATION";
-    public final static String FEEDBACK_KEY = "FEEDBACK";
-    public final static String MEDIA_KEY = "MEDIA";
-    public final static String PHONE_VIBRATION_KEY = "PHONEVIBRATION";
-    public final static String NOTIFICATION_VIBRATION_KEY = "NOTIFICATIONVIBRATION";
-    public final static String FEEDBACK_VIBRATION_KEY = "FEEDBACKVIBRATION";
-    public final static String MEDIA_VIBRATION_KEY = "MEDIAVIBRATION";
+
+    /* Determines if the start/stop times of 2 settings interfere */
+    public static boolean doSettingsInterfere(){
+        //TODO boolean return: check to see if a sound setting exists for this current time
+        //may want to change to return the name of the setting that interferes
+        return false;
+    }
+
+
+    //TODO boolean return: check to see if a default sound setting exists
+
+    //creates a setting Object
+    public static SettingObject createSettingObjectFromIntent(Intent intent){
+        SettingObject settingObject = new SettingObject();
+        settingObject.setTitle(intent.getStringExtra(RequestHandler.TITLE));
+        settingObject.setFromHour(intent.getIntExtra(RequestHandler.START_HOUR, 0));
+        settingObject.setFromMin(intent.getIntExtra(RequestHandler.START_MIN, 0));
+        settingObject.setToHour(intent.getIntExtra(RequestHandler.END_HOUR, 0));
+        settingObject.setToMin(intent.getIntExtra(RequestHandler.END_MIN, 0));
+        settingObject.setTimeFrame(intent.getStringExtra(RequestHandler.TIMEFRAME));//later let updateSetting handle this
+        settingObject.setDaysofweek(intent.getStringExtra(RequestHandler.DAYSOFWEEK));
+        settingObject.setPhone(intent.getIntExtra(RequestHandler.PHONE, 0));
+        settingObject.setNotification(intent.getIntExtra(RequestHandler.NOTIFICATION, 0));
+        settingObject.setFeedback(intent.getIntExtra(RequestHandler.FEEDBACK, 0));
+        settingObject.setMedia(intent.getIntExtra(RequestHandler.MEDIA, 0));
+        settingObject.setVibration(intent.getBooleanExtra(RequestHandler.VIBRATION, false));
+        return settingObject;
+    }
+
 }

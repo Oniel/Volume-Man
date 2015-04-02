@@ -9,8 +9,11 @@ package com.oniel.volumescheduler;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.format.Time;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+import android.widget.TimePicker;
 
 
 public class SettingPage extends ActionBarActivity {
@@ -19,6 +22,19 @@ public class SettingPage extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting_page);
+
+        /* get calling intention */
+        int resultCode = getIntent().getIntExtra(RequestHandler.REQUEST_CODE, -1); // 2 new, 3 update
+
+        /* initialize activity items */
+        TextView title = (TextView) findViewById(R.id.uS_lbl_title);
+        title.setText(getIntent().getStringExtra(RequestHandler.TITLE));
+
+        TimePicker startTime = (TimePicker) findViewById(R.id.uS_tp_start);
+        //LEFT OFF TODO need to get the current time if no intent data
+        //startTime.setCurrentHour(getIntent().getIntExtra(RequestHandler.START_HOUR, 0));
+        TimePicker endTime = (TimePicker) findViewById(R.id.uS_tp_end);
+        //endTime.setCurrentMinute(getIntent().getIntExtra(RequestHandler.START_MIN, 0));
     }
 
 

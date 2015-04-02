@@ -128,20 +128,21 @@ public class ListAdapterHandler extends BaseAdapter {
     private Intent createSettingPageIntent(SettingObject item){
         Intent intent = new Intent(activity, SettingPage.class);
         intent.putExtra(RequestHandler.REQUEST_CODE, RequestHandler.REQ_UPDATE_SETTING);
-        intent.putExtra(RequestHandler.RET_TITLE, item.getTitle());
-        intent.putExtra(RequestHandler.RET_FROM_HOURS, item.getFromHour());
-        intent.putExtra(RequestHandler.RET_FROM_MINS, item.getFromMin());
-        intent.putExtra(RequestHandler.RET_TO_HOURS, item.getToHour());
-        intent.putExtra(RequestHandler.RET_TO_MINS, item.getToMin());
-        intent.putExtra(RequestHandler.RET_DAYSOFWEEK, item.getDaysofweek());
-        intent.putExtra(RequestHandler.RET_PHONE, item.getPhone());
-        intent.putExtra(RequestHandler.RET_NOTIFICATION, item.getNotification());
-        intent.putExtra(RequestHandler.RET_FEEDBACK, item.getFeedback());
-        intent.putExtra(RequestHandler.RET_MEDIA, item.getMedia());
-        intent.putExtra(RequestHandler.RET_PHONE_VIBRATION, item.getPhoneVibration());
-        intent.putExtra(RequestHandler.RET_NOTIFICATION_VIBRATION, item.getNotificationVibration());
-        intent.putExtra(RequestHandler.RET_FEEDBACK_VIBRATION, item.getFeedbackVibration());
-        intent.putExtra(RequestHandler.RET_MEDIA_VIBRATION, item.getMediaVibration());
+        intent.putExtra(RequestHandler.TITLE, item.getTitle());
+        intent.putExtra(RequestHandler.START_HOUR, item.getFromHour());
+        intent.putExtra(RequestHandler.START_MIN, item.getFromMin());
+        intent.putExtra(RequestHandler.END_HOUR, item.getToHour());
+        intent.putExtra(RequestHandler.END_MIN, item.getToMin());
+        intent.putExtra(RequestHandler.DAYSOFWEEK, item.getDaysofweek());
+        intent.putExtra(RequestHandler.PHONE, item.getPhone());
+        intent.putExtra(RequestHandler.NOTIFICATION, item.getNotification());
+        intent.putExtra(RequestHandler.FEEDBACK, item.getFeedback());
+        intent.putExtra(RequestHandler.MEDIA, item.getMedia());
+        intent.putExtra(RequestHandler.VIBRATION, item.getVibration());
+//        intent.putExtra(RequestHandler.PHONE_VIBRATION, item.getPhoneVibration());
+//        intent.putExtra(RequestHandler.NOTIFICATION_VIBRATION, item.getNotificationVibration());
+//        intent.putExtra(RequestHandler.FEEDBACK_VIBRATION, item.getFeedbackVibration());
+//        intent.putExtra(RequestHandler.MEDIA_VIBRATION, item.getMediaVibration());
         return intent;
     }
 }
