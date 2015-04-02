@@ -3,6 +3,10 @@
 * Author: Oniel Toledo
 * Created: 01.03.2015
 * Description: Volume Scheduler Default Sound Setting Page Logic (User)
+* Vibration:
+*   if checked:     progress bars will be set to 0 and phone is placed on vibration only,
+*                   but the previous seekbar volume settings are still saved (don't forget this impl. elsewhere!! on AlarmSchedule)
+*   if unchecked:   previous progress bar setting will be reinstated, user will be able to change volume as necassary.
 * ******************************
 */
 package com.oniel.volumescheduler;
@@ -26,8 +30,15 @@ import android.widget.Toast;
 
 public class DefaultPage extends ActionBarActivity {
     /* globals */
-    AudioManager audioManager; // device audio stream
-    SharedPreferences sharedPref; //this activities shared preferences file calling card
+    private AudioManager audioManager;
+    public SharedPreferences sharedPref;
+
+    private SeekBar phone_sb;
+    private SeekBar notification_sb;
+    private SeekBar feedback_sb;
+    private SeekBar media_sb;
+    private CheckBox vibration;
+
     private Context context = this;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,60 +54,75 @@ public class DefaultPage extends ActionBarActivity {
         /* set seekbar progress */
         //phone
         ImageView ic_phone = (ImageView) findViewById(R.id.dP_ic_phone);
-        final SeekBar s_phone = (SeekBar) findViewById(R.id.dP_sb_phone);
-        s_phone.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_RING));
-        s_phone.setProgress(getPhone());
-        initSeekBarImageView(s_phone, ic_phone, R.drawable.ic_phone_vol, R.drawable.ic_phone_off);
+        phone_sb = (SeekBar) findViewById(R.id.dP_sb_phone);
+        phone_sb.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_RING));
+        phone_sb.setProgress(getPhone());
+        initSeekBarImageView(phone_sb, ic_phone, R.drawable.ic_phone_vol, R.drawable.ic_phone_off);
         //notifications
         ImageView ic_notification = (ImageView) findViewById(R.id.dP_ic_notification);
-        final SeekBar s_notification = (SeekBar) findViewById(R.id.dP_sb_notification);
-        s_notification.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION));
-        s_notification.setProgress(getNotification());
-        initSeekBarImageView(s_notification, ic_notification, R.drawable.ic_notification_vol, R.drawable.ic_notification_off);
+        notification_sb = (SeekBar) findViewById(R.id.dP_sb_notification);
+        notification_sb.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION));
+        notification_sb.setProgress(getNotification());
+        initSeekBarImageView(notification_sb, ic_notification, R.drawable.ic_notification_vol, R.drawable.ic_notification_off);
         //feedback
         ImageView ic_feedback = (ImageView) findViewById(R.id.dP_ic_feedback);
-        final SeekBar s_feedback = (SeekBar) findViewById(R.id.dP_sb_feedback);
-        s_feedback.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM));
-        s_feedback.setProgress(getFeedback());
-        initSeekBarImageView(s_feedback, ic_feedback, R.drawable.ic_feedback_vol, R.drawable.ic_feedback_off);
+        feedback_sb = (SeekBar) findViewById(R.id.dP_sb_feedback);
+        feedback_sb.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM));
+        feedback_sb.setProgress(getFeedback());
+        initSeekBarImageView(feedback_sb, ic_feedback, R.drawable.ic_feedback_vol, R.drawable.ic_feedback_off);
         //media
         ImageView ic_media = (ImageView) findViewById(R.id.dP_ic_media);
-        final SeekBar s_media = (SeekBar) findViewById(R.id.dP_sb_media);
-        s_media.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
-        s_media.setProgress(getMedia());
-        initSeekBarImageView(s_media, ic_media, R.drawable.ic_media_vol, R.drawable.ic_media_off);
-
-        final CheckBox vibration = (CheckBox) findViewById(R.id.dP_cb_vibrate);
-        vibration.setChecked(getVibration());
+        media_sb = (SeekBar) findViewById(R.id.dP_sb_media);
+        media_sb.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+        media_sb.setProgress(getMedia());
+        initSeekBarImageView(media_sb, ic_media, R.drawable.ic_media_vol, R.drawable.ic_media_off);
+        //vibration
+        vibration = (CheckBox) findViewById(R.id.dP_cb_vibrate);
         initCheckBoxVibration(vibration);
+        vibration.setChecked(getVibration());
+
 
         /* handle 'apply' button click - perform settings changes */
         apply_btn = (Button) findViewById(R.id.dP_btn_apply);
         apply_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //save new sound setting
+
+                /* update default vibration saved settings*/
                 setDefaultSound(
-                        s_phone.getProgress(),
-                        s_notification.getProgress(),
-                        s_feedback.getProgress(),
-                        s_media.getProgress(),
+                        phone_sb.getProgress(),
+                        notification_sb.getProgress(),
+                        feedback_sb.getProgress(),
+                        media_sb.getProgress(),
                         vibration.isChecked()
-                );
+                ); //after this getX() is valid for use
 
-                //if no other setting is currently set, change the default volume now
+                /* change the phone's volume setting if another sound setting does not currently interfere */
                 if(!RequestHandler.doSettingsInterfere()){
+                    if(vibration.isChecked()){
+                        audioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE); //NOTE: previous volume settings are preserved
+                        setVolumeControlStream(AudioManager.STREAM_MUSIC); //NOTE: ringer_mode_silent does not effect stream_music...idk y
+                        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMedia(), 0);
 
-                    setVolumeControlStream(AudioManager.STREAM_RING);
-                    audioManager.setStreamVolume(AudioManager.STREAM_RING, s_phone.getProgress(), 0);
-                    setVolumeControlStream(AudioManager.STREAM_NOTIFICATION);
-                    audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, s_notification.getProgress(), 0);
-                    setVolumeControlStream(AudioManager.STREAM_SYSTEM);
-                    audioManager.setStreamVolume(AudioManager.STREAM_SYSTEM,s_feedback.getProgress(), 0);
-                    setVolumeControlStream(AudioManager.STREAM_MUSIC);
-                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,s_media.getProgress(), 0);
+                    } else {
 
+                        if(isSilent()){
+                            audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+                            setVolumeControlStream(AudioManager.STREAM_MUSIC); //NOTE: ringer_mode_silent does not effect stream_music...idk y
+                            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMedia(), 0);
+                        } else {
+                            setVolumeControlStream(AudioManager.STREAM_RING);
+                            audioManager.setStreamVolume(AudioManager.STREAM_RING, getPhone(), 0);
+                            setVolumeControlStream(AudioManager.STREAM_NOTIFICATION);
+                            audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, getNotification(), 0);
+                            setVolumeControlStream(AudioManager.STREAM_SYSTEM);
+                            audioManager.setStreamVolume(AudioManager.STREAM_SYSTEM, getFeedback(), 0);
+                            setVolumeControlStream(AudioManager.STREAM_MUSIC);
+                            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMedia(), 0);
+                        }
+                    }
                 }
+
 
 
                 Toast.makeText(context, R.string.toast_default_set, Toast.LENGTH_SHORT).show();
@@ -122,10 +148,26 @@ public class DefaultPage extends ActionBarActivity {
         else icon.setImageResource(imageVolOn);
         //set image change on seekbar change
         sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            //this could be made more efficeint if I could get the previous progress setting...
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(progress == 0) icon.setImageResource(imageVolOff);
-                else icon.setImageResource(imageVolOn);
+                //if ringer is silent, notification and feedback must also be silent (built into system)
+                if(progress == 0) {
+                    icon.setImageResource(imageVolOff);
+                    if(seekBar.equals(phone_sb)){
+                        notification_sb.setProgress(0);
+                        feedback_sb.setProgress(0);
+                    }
+
+                } else {
+                    //ringer cannot be silent if either notification or feedback are not silent (built into system)
+                    if(phone_sb.getProgress()==0 && (seekBar.equals(notification_sb) || seekBar.equals(feedback_sb)))
+                        phone_sb.setProgress(1);
+
+
+                    icon.setImageResource(imageVolOn);
+                    if(vibration.isChecked()) vibration.setChecked(false);
+                }
             }
 
             @Override
@@ -146,7 +188,8 @@ public class DefaultPage extends ActionBarActivity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b){
                     Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-                    vibe.vibrate(50);
+                    vibe.vibrate(100);
+                    setSeekbarsSilent();
                 }
             }
         });
@@ -200,6 +243,19 @@ public class DefaultPage extends ActionBarActivity {
         editor.putInt(RequestHandler.MEDIA, media);
         editor.putBoolean(RequestHandler.VIBRATION,vibration);
         editor.commit();
+    }
+
+    /* sets vol seekbars to silent (does not change shared prefs) */
+    public void setSeekbarsSilent(){
+        phone_sb.setProgress(0);
+        notification_sb.setProgress(0);
+        feedback_sb.setProgress(0);
+        media_sb.setProgress(0);
+    }
+
+    /* return true if volumes are set to silent*/
+    public boolean isSilent(){
+        return (getPhone()==0 && getNotification()==0 && getFeedback()==0 && getMedia()==0);
     }
 
 }

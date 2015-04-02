@@ -37,7 +37,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true" />
         <View
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="16dp"
             android:layout_width="fill_parent"
             android:layout_height="2dip"
             android:background="#FF666666"
@@ -68,7 +68,7 @@
             android:layout_alignParentStart="true" />
 
         <View
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="16dp"
             android:layout_width="fill_parent"
             android:layout_height="2dip"
             android:background="#FF666666"
@@ -99,7 +99,7 @@
 
         <!-- Horizontal Line -->
         <View
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="16dp"
             android:layout_width="fill_parent"
             android:layout_height="2dip"
             android:background="#FF666666"
@@ -236,7 +236,7 @@
 
         <!-- HORIZONTAL SPLIT LINE -->
         <View
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="16dp"
             android:layout_width="fill_parent"
             android:layout_height="2dip"
             android:background="#FF666666"
@@ -257,126 +257,149 @@
             android:layout_below="@+id/uS_hr3"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
+
         <TextView
-            android:layout_marginTop="5dp"
+            android:id="@+id/uS_lbl_phone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/uS_lbl_volPreferences"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_marginBottom="4dp"
             android:text="@string/label_phone"
             android:textColor="@android:color/white"
-            android:id="@+id/uS_lbl_phone" />
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
         <ImageView
-            android:src="@drawable/ic_phone_vol"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/uS_ic_phone"
-            android:layout_below="@+id/uS_lbl_phone"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-        <SeekBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/uS_lbl_phone"
+            android:src="@drawable/ic_phone_vol"
+            android:contentDescription="@string/icon_phone" />
+
+        <SeekBar
             android:id="@+id/uS_sb_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
             android:layout_alignBottom="@+id/uS_ic_phone"
-            android:layout_toRightOf="@+id/uS_ic_phone"
-            android:layout_toEndOf="@+id/uS_ic_phone"
-            android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_toEndOf="@+id/uS_ic_phone"
+            android:layout_toRightOf="@+id/uS_ic_phone"
             android:indeterminate="false" />
 
         <TextView
+            android:id="@+id/uS_lbl_notification"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="4dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/uS_ic_phone"
             android:text="@string/label_notification"
             android:textColor="@android:color/white"
-            android:id="@+id/uS_lbl_notification"
-            android:layout_below="@+id/uS_ic_phone"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
         <ImageView
-            android:src="@drawable/ic_notification_vol"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/uS_ic_notification"
-            android:layout_below="@+id/uS_lbl_notification"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-        <SeekBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/uS_lbl_notification"
+            android:src="@drawable/ic_notification_vol"
+            android:contentDescription="@string/icon_notification"/>
+
+        <SeekBar
             android:id="@+id/uS_sb_notification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/uS_ic_notification"
-            android:layout_alignLeft="@+id/uS_sb_phone"
-            android:layout_alignStart="@+id/uS_sb_phone"
-            android:layout_alignRight="@+id/uS_sb_phone"
             android:layout_alignEnd="@+id/uS_sb_phone"
+            android:layout_alignLeft="@+id/uS_sb_phone"
+            android:layout_alignRight="@+id/uS_sb_phone"
+            android:layout_alignStart="@+id/uS_sb_phone"
             android:indeterminate="false" />
 
         <TextView
+            android:id="@+id/uS_lbl_feedback"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="4dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/uS_ic_notification"
             android:text="@string/label_feedback"
             android:textColor="@android:color/white"
-            android:id="@+id/uS_lbl_feedback"
-            android:layout_below="@+id/uS_ic_notification"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
         <ImageView
-            android:src="@drawable/ic_feedback_vol"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/uS_ic_feedback"
-            android:layout_below="@+id/uS_lbl_feedback"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-        <SeekBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/uS_lbl_feedback"
+            android:src="@drawable/ic_feedback_vol"
+            android:contentDescription="@string/icon_feedback"/>
+
+        <SeekBar
             android:id="@+id/uS_sb_feedback"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/uS_ic_feedback"
-            android:layout_alignLeft="@+id/uS_sb_notification"
-            android:layout_alignStart="@+id/uS_sb_notification"
-            android:layout_alignRight="@+id/uS_sb_notification"
-            android:layout_alignEnd="@+id/uS_sb_notification"
+            android:layout_alignEnd="@+id/uS_sb_phone"
+            android:layout_alignLeft="@+id/uS_sb_phone"
+            android:layout_alignRight="@+id/uS_sb_phone"
+            android:layout_alignStart="@+id/uS_sb_phone"
             android:indeterminate="false" />
 
         <TextView
+            android:id="@+id/uS_lbl_media"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="4dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/uS_ic_feedback"
             android:text="@string/label_media"
             android:textColor="@android:color/white"
-            android:id="@+id/uS_lbl_media"
-            android:layout_below="@+id/uS_ic_feedback"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
         <ImageView
-            android:src="@drawable/ic_media_vol"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/uS_ic_media"
-            android:layout_below="@+id/uS_lbl_media"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-        <SeekBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/uS_lbl_media"
+            android:src="@drawable/ic_media_vol"
+            android:contentDescription="@string/icon_media" />
+
+        <SeekBar
             android:id="@+id/uS_sb_media"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/uS_ic_media"
-            android:layout_toRightOf="@+id/uS_ic_media"
-            android:layout_toEndOf="@+id/uS_ic_media"
-            android:layout_alignRight="@+id/uS_sb_feedback"
-            android:layout_alignEnd="@+id/uS_sb_feedback"
+            android:layout_alignEnd="@+id/uS_sb_phone"
+            android:layout_alignLeft="@+id/uS_sb_phone"
+            android:layout_alignRight="@+id/uS_sb_phone"
+            android:layout_alignStart="@+id/uS_sb_phone"
             android:indeterminate="false" />
 
+        <!-- TODO need to change the checkbox border color -->
         <CheckBox
             android:id="@+id/uS_cb_vibrate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:text="@string/label_vibrate"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@android:color/white"
             android:layout_below="@+id/uS_sb_media"
             android:layout_alignParentLeft="true"
@@ -386,33 +409,33 @@
 
 
         <LinearLayout
-            android:layout_marginTop="10dp"
+            android:id="@+id/linearLayout2"
+            android:layout_below="@+id/uS_cb_vibrate"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_below="@+id/uS_cb_vibrate"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true">
+            android:layout_alignRight="@+id/uS_sb_media"
+            android:layout_alignEnd="@+id/uS_sb_media">
+
+            <!-- setting application buttons -->
             <Button
-                android:layout_width="0px"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="@string/btn_cancel"
                 android:id="@+id/uS_btn_cancel"
-                android:layout_below="@+id/uS_ic_media"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/btn_cancel"
+                android:textColor="@android:color/white"/>
 
             <Button
+                android:id="@+id/uS_btn_apply"
                 android:layout_width="0px"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="@string/btn_apply"
-                android:id="@+id/uS_btn_ok"
-                android:layout_alignBottom="@+id/button"
-                android:layout_toRightOf="@+id/uS_lbl_media"
-                android:layout_toEndOf="@+id/cD_lbl_media" />
+                android:textColor="@android:color/white"/>
         </LinearLayout>
+
+
 
     </RelativeLayout>
 

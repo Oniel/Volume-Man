@@ -9,11 +9,11 @@
     android:background="#2f4056"
     tools:context="com.oniel.volumescheduler.DefaultPage">
 
-    <!--TODO add vibration settings when i figure out how to get that -->
     <TextView
         android:id="@+id/dP_lbl_phone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
         android:text="@string/label_phone"
         android:textColor="@android:color/white"
         android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -32,6 +32,7 @@
         android:id="@+id/dP_sb_phone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
         android:layout_alignBottom="@+id/dP_ic_phone"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
@@ -43,6 +44,8 @@
         android:id="@+id/dP_lbl_notification"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="4dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/dP_ic_phone"
@@ -75,6 +78,8 @@
         android:id="@+id/dP_lbl_feedback"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="4dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/dP_ic_notification"
@@ -97,16 +102,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/dP_ic_feedback"
-        android:layout_alignEnd="@+id/dP_sb_notification"
-        android:layout_alignLeft="@+id/dP_sb_notification"
-        android:layout_alignRight="@+id/dP_sb_notification"
-        android:layout_alignStart="@+id/dP_sb_notification"
+        android:layout_alignEnd="@+id/dP_sb_phone"
+        android:layout_alignLeft="@+id/dP_sb_phone"
+        android:layout_alignRight="@+id/dP_sb_phone"
+        android:layout_alignStart="@+id/dP_sb_phone"
         android:indeterminate="false" />
 
     <TextView
         android:id="@+id/dP_lbl_media"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="4dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/dP_ic_feedback"
@@ -129,17 +136,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/dP_ic_media"
-        android:layout_alignEnd="@+id/dP_sb_feedback"
-        android:layout_alignRight="@+id/dP_sb_feedback"
-        android:layout_toEndOf="@+id/dP_ic_media"
-        android:layout_toRightOf="@+id/dP_ic_media"
+        android:layout_alignEnd="@+id/dP_sb_phone"
+        android:layout_alignLeft="@+id/dP_sb_phone"
+        android:layout_alignRight="@+id/dP_sb_phone"
+        android:layout_alignStart="@+id/dP_sb_phone"
         android:indeterminate="false" />
 
+    <!-- TODO need to change the checkbox border color -->
     <CheckBox
         android:id="@+id/dP_cb_vibrate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="@string/label_vibrate"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@android:color/white"
         android:layout_below="@+id/dP_sb_media"
         android:layout_alignParentLeft="true"
