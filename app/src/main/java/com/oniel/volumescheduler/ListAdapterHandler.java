@@ -129,16 +129,20 @@ public class ListAdapterHandler extends BaseAdapter {
         Intent intent = new Intent(activity, SettingPage.class);
         intent.putExtra(RequestHandler.REQUEST_CODE, RequestHandler.REQ_UPDATE_SETTING);
         intent.putExtra(RequestHandler.TITLE, item.getTitle());
-        intent.putExtra(RequestHandler.START_HOUR, item.getFromHour());
-        intent.putExtra(RequestHandler.START_MIN, item.getFromMin());
-        intent.putExtra(RequestHandler.END_HOUR, item.getToHour());
-        intent.putExtra(RequestHandler.END_MIN, item.getToMin());
+//NOTE delete if not used
+//        intent.putExtra(RequestHandler.START_HOUR, item.getFromHour());
+//        intent.putExtra(RequestHandler.START_MIN, item.getFromMin());
+//        intent.putExtra(RequestHandler.END_HOUR, item.getToHour());
+//        intent.putExtra(RequestHandler.END_MIN, item.getToMin());
+        intent.putExtra(RequestHandler.STARTTIME, item.getStartTime());
+        intent.putExtra(RequestHandler.ENDTIME, item.getEndTime());
         intent.putExtra(RequestHandler.DAYSOFWEEK, item.getDaysofweek());
         intent.putExtra(RequestHandler.PHONE, item.getPhone());
         intent.putExtra(RequestHandler.NOTIFICATION, item.getNotification());
         intent.putExtra(RequestHandler.FEEDBACK, item.getFeedback());
         intent.putExtra(RequestHandler.MEDIA, item.getMedia());
         intent.putExtra(RequestHandler.VIBRATION, item.getVibration());
+//NOTE delete if not used
 //        intent.putExtra(RequestHandler.PHONE_VIBRATION, item.getPhoneVibration());
 //        intent.putExtra(RequestHandler.NOTIFICATION_VIBRATION, item.getNotificationVibration());
 //        intent.putExtra(RequestHandler.FEEDBACK_VIBRATION, item.getFeedbackVibration());

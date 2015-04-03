@@ -100,13 +100,9 @@ public class MainPage extends ActionBarActivity {
     //handles data returned from another activity
     public void onActivityResult(int requestCode, int resultCode, Intent intent)
     {
-        //if return was from 'change default' activity
-        if (resultCode == RequestHandler.REQ_DEFAULT) {
-            System.out.println("Change Default Setting Call");
 
-        }
         //values returned for creating a new setting
-        else if (resultCode == RequestHandler.REQ_NEW_SETTING) {
+        if (resultCode == RequestHandler.REQ_NEW_SETTING) {
            /*
                 create system service request
             */

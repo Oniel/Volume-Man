@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -32,6 +33,7 @@ public class DefaultPage extends ActionBarActivity {
     /* globals */
     private AudioManager audioManager;
     public SharedPreferences sharedPref;
+    public final static String PREF = "PREF";
 
     private SeekBar phone_sb;
     private SeekBar notification_sb;
@@ -39,7 +41,7 @@ public class DefaultPage extends ActionBarActivity {
     private SeekBar media_sb;
     private CheckBox vibration;
 
-    private Context context = this;
+    public Context context = this;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Button cancel_btn;
@@ -51,36 +53,7 @@ public class DefaultPage extends ActionBarActivity {
         initDefaultSharedPref(); //launch shared preferences
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-        /* set seekbar progress */
-        //phone
-        ImageView ic_phone = (ImageView) findViewById(R.id.dP_ic_phone);
-        phone_sb = (SeekBar) findViewById(R.id.dP_sb_phone);
-        phone_sb.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_RING));
-        phone_sb.setProgress(getPhone());
-        initSeekBarImageView(phone_sb, ic_phone, R.drawable.ic_phone_vol, R.drawable.ic_phone_off);
-        //notifications
-        ImageView ic_notification = (ImageView) findViewById(R.id.dP_ic_notification);
-        notification_sb = (SeekBar) findViewById(R.id.dP_sb_notification);
-        notification_sb.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION));
-        notification_sb.setProgress(getNotification());
-        initSeekBarImageView(notification_sb, ic_notification, R.drawable.ic_notification_vol, R.drawable.ic_notification_off);
-        //feedback
-        ImageView ic_feedback = (ImageView) findViewById(R.id.dP_ic_feedback);
-        feedback_sb = (SeekBar) findViewById(R.id.dP_sb_feedback);
-        feedback_sb.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM));
-        feedback_sb.setProgress(getFeedback());
-        initSeekBarImageView(feedback_sb, ic_feedback, R.drawable.ic_feedback_vol, R.drawable.ic_feedback_off);
-        //media
-        ImageView ic_media = (ImageView) findViewById(R.id.dP_ic_media);
-        media_sb = (SeekBar) findViewById(R.id.dP_sb_media);
-        media_sb.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
-        media_sb.setProgress(getMedia());
-        initSeekBarImageView(media_sb, ic_media, R.drawable.ic_media_vol, R.drawable.ic_media_off);
-        //vibration
-        vibration = (CheckBox) findViewById(R.id.dP_cb_vibrate);
-        initCheckBoxVibration(vibration);
-        vibration.setChecked(getVibration());
-
+        initSeekBars();
 
         /* handle 'apply' button click - perform settings changes */
         apply_btn = (Button) findViewById(R.id.dP_btn_apply);
@@ -139,6 +112,37 @@ public class DefaultPage extends ActionBarActivity {
                 finish();
             }
         });
+    }
+
+    private void initSeekBars(){
+        //phone
+        ImageView ic_phone = (ImageView) findViewById(R.id.dP_ic_phone);
+        phone_sb = (SeekBar) findViewById(R.id.dP_sb_phone);
+        phone_sb.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_RING));
+        phone_sb.setProgress(getPhone());
+        initSeekBarImageView(phone_sb, ic_phone, R.drawable.ic_phone_vol, R.drawable.ic_phone_off);
+        //notifications
+        ImageView ic_notification = (ImageView) findViewById(R.id.dP_ic_notification);
+        notification_sb = (SeekBar) findViewById(R.id.dP_sb_notification);
+        notification_sb.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION));
+        notification_sb.setProgress(getNotification());
+        initSeekBarImageView(notification_sb, ic_notification, R.drawable.ic_notification_vol, R.drawable.ic_notification_off);
+        //feedback
+        ImageView ic_feedback = (ImageView) findViewById(R.id.dP_ic_feedback);
+        feedback_sb = (SeekBar) findViewById(R.id.dP_sb_feedback);
+        feedback_sb.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM));
+        feedback_sb.setProgress(getFeedback());
+        initSeekBarImageView(feedback_sb, ic_feedback, R.drawable.ic_feedback_vol, R.drawable.ic_feedback_off);
+        //media
+        ImageView ic_media = (ImageView) findViewById(R.id.dP_ic_media);
+        media_sb = (SeekBar) findViewById(R.id.dP_sb_media);
+        media_sb.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+        media_sb.setProgress(getMedia());
+        initSeekBarImageView(media_sb, ic_media, R.drawable.ic_media_vol, R.drawable.ic_media_off);
+        //vibration
+        vibration = (CheckBox) findViewById(R.id.dP_cb_vibrate);
+        initCheckBoxVibration(vibration);
+        vibration.setChecked(getVibration());
     }
 
     /* set seekbar listener and image update*/
@@ -221,7 +225,7 @@ public class DefaultPage extends ActionBarActivity {
     // default setting shared preferences attributes and methods
 
     /* initialize default settings shared preferences*/
-    public void initDefaultSharedPref(){sharedPref = this.getPreferences(Context.MODE_PRIVATE); }
+    public void initDefaultSharedPref(){sharedPref = getSharedPreferences(PREF,MODE_PRIVATE);}
 
     /* verification that the default settings have been set, if false default settings have never been
     * set and therefore must be applied - not too sure how i should handle this... */
@@ -232,7 +236,7 @@ public class DefaultPage extends ActionBarActivity {
     public int getNotification(){return sharedPref.getInt(RequestHandler.NOTIFICATION, audioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION)/2);}
     public int getFeedback(){return sharedPref.getInt(RequestHandler.FEEDBACK, audioManager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM)/2);}
     public int getMedia(){return sharedPref.getInt(RequestHandler.MEDIA, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)/2);}
-    public boolean getVibration(){return sharedPref.getBoolean(RequestHandler.VIBRATION, true);}
+    public boolean getVibration(){return sharedPref.getBoolean(RequestHandler.VIBRATION, false);}
 
     /* set Default Sound Settings to the class's shared preferences */
     public void setDefaultSound(int phone, int notification, int feedback, int media, boolean vibration){
