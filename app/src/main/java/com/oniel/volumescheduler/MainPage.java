@@ -48,11 +48,8 @@ public class MainPage extends ActionBarActivity {
         db = new DatabaseHandler(this);
 
         /* populate the list view with db entries */
-        if(db.getRowsCount() != 0) {
+        if(db.getRowsCount() != 0)
             updateListView();
-            System.out.println("getRowsCOUNT != 0");
-        }
-        else System.out.println("getRowsCOUNT == 0");
 
         /* handle 'create a new setting' button click */
         btn_newSettings = (Button) findViewById(R.id.btn_new_setting);

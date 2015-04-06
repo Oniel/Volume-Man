@@ -116,36 +116,25 @@ public class SettingPage extends ActionBarActivity {
                 }
             }
         });
-
     }
 
     /* validate and prepare setting for saving */
     private boolean validateSubmission(){
-        //TODO handle updateSetting
         //error check and intent activity submission
         if(title.getText().toString().matches("")) {
             Toast.makeText(this, R.string.toast_no_title, Toast.LENGTH_LONG).show(); return false;
         } else if(database.rowExistence(title.getText().toString())){
             Toast.makeText(this, R.string.toast_title_exists, Toast.LENGTH_LONG).show(); return false;
         } else {
-            String startTime = timeTo24HrString(startTime_tp); //this maybe obselete if timeFrame can be used
-            String endTime = timeTo24HrString(endTime_tp);
 
             String daysOfWeekStr = daysOfWeekToString();
             String timeFrame = getTimeFrame(startTime_tp, endTime_tp, daysOfWeekStr);
 
-            if(startTime.equals(endTime)){ //time frames are the same
-                Toast.makeText(this, R.string.toast_timeframe_invalid, Toast.LENGTH_LONG).show(); return false;
-            }
+            /* error handling for time confliction issues */
+            if(timeFrameConflictsExist(timeFrame))
+                return false;
 
-            //check database for conflicting time frames with this new setting
-//            Conflict conflict = checkTimeFrameConfliction(timeframe);
-//            if(conflict.conflict){
-//                Toast.makeText(this, R.string.toast_timeframe_conflict + conflict.message, Toast.LENGTH_LONG).show(); return false;
-//            }
-
-            String time = generate12HourTime(startTime, endTime);
-            System.out.println("settingpage: " + time);
+            String time = generate12HourTime(timeFrame);
 
             /* no errors, return new setting as intent to MainPage */
             Intent resultIntent = new Intent();
@@ -165,69 +154,18 @@ public class SettingPage extends ActionBarActivity {
         }
     }
 
-    /* time frame check procedure
-       if single day
-            if new time frame hours falls within existing time frame hours
-            else if time frame hours
-       if multiday
-
-
-    */
-
-    /* checks database for any existing setting who's timeframe interferes with the parameter THIS IS GOING TO BE A BITCH TO DO */
-    private Conflict checkTimeFrameConfliction(String timeframe){
-        //time variables of the new setting
-        int newStartHour = Integer.parseInt(timeframe.split(":")[0]);
-        int newStartMin = Integer.parseInt(timeframe.split(":")[1]);
-        int newEndHour = Integer.parseInt(timeframe.split(":")[3]);
-        int newEndMin = Integer.parseInt(timeframe.split(":")[4]);
-
-        List<SettingObject> settingObjectList = database.getAllRows();
-        //perform conflict check for each saved item in the database
-        for(SettingObject setting : settingObjectList){
-            //time variables of the existing setting
-            int oldStartHour = Integer.parseInt(setting.getTimeFrame().split(":")[0]);
-            int oldStartMin = Integer.parseInt(setting.getTimeFrame().split(":")[1]);
-            int oldEndHour = Integer.parseInt(setting.getTimeFrame().split(":")[3]);
-            int oldEndMin = Integer.parseInt(setting.getTimeFrame().split(":")[4]);
-
-            //single day
-            if(isTimeFrameSingleDay(timeframe)){
-                //falls w/in existing time frame (broke into multiple else if's for readability
-                if((oldStartHour<newStartHour && newStartHour<oldEndHour) || (oldStartHour<newEndHour && newEndHour<oldEndHour))
-                    return dowConfliction(timeframe, setting.getTimeFrame(), setting.getTitle());
-                else if(oldStartHour==newStartHour && oldStartMin<newStartMin)
-                    return dowConfliction(timeframe, setting.getTimeFrame(), setting.getTitle());
-                else if(oldStartHour==newEndHour && oldStartMin<newEndMin)
-                    return dowConfliction(timeframe, setting.getTimeFrame(), setting.getTitle());
-                else if(oldEndHour==newStartHour && newStartMin<oldStartMin)
-                    return dowConfliction(timeframe, setting.getTimeFrame(), setting.getTitle());
-                else if(oldEndHour==newEndHour && newEndMin<oldEndHour)
-                    return dowConfliction(timeframe, setting.getTimeFrame(), setting.getTitle());
-                else
-                    return new Conflict(); //returns conflict.conflict=false
-            //multiday -oposite of singe day hour check
-            } else {
-                //fals w/in existing time frame
-                //2230 0030 -- 2230
-
-            }
-
-        }
-        return new Conflict();
+    /* validate time frame with itself and other settings in the databas */
+    private boolean timeFrameConflictsExist(String timeframe){
+        //TODO
+        return false;
     }
 
-    /* check to see if days of the week conflict */
-    //days, everyday, repeat once
-    private Conflict dowConfliction(String newTimeFrame, String oldTimeFrame, String oldTitle){
-        Conflict conflict = new Conflict();
-
-        return conflict;
-    }
-
-    /* return true if single day, return false if multiday */
-    private boolean isTimeFrameSingleDay(String timeframe){
-        return timeframe.split(":")[2].equals(timeframe.split(":")[5]);
+    /* rets: [<HHMM>, <HHMM>] int array */
+    private int[] convertToMilitaryTime(String timeframe){
+        int[] time = new int[2];
+        time[0] = Integer.parseInt(timeframe.split(":")[0] + timeframe.split(":")[1]);
+        time[1] = Integer.parseInt(timeframe.split(":")[3] + timeframe.split(":")[4]);
+        return time;
     }
 
     //generate a time frame: startHour:startMinute:startDaysOfWeek:endHour:endMinute:endDaysOfWeek
@@ -250,6 +188,50 @@ public class SettingPage extends ActionBarActivity {
             timeframe = String.valueOf(sH)+":"+String.valueOf(sM)+":"+dows+":"+String.valueOf(eH)+":"+String.valueOf(eM)+":"+increaseDOWby1(dows);
         }
         return timeframe;
+    }
+
+
+    /* handle day of the week button click from UI */
+    public void dowClick(View view){
+        //change view background
+        if (view.getBackground().getConstantState() == getResources().getDrawable(R.drawable.border_unselected).getConstantState())
+            view.setBackgroundResource(R.drawable.border_selected);
+        else view.setBackgroundResource(R.drawable.border_unselected);
+        //update dayOfWeek bool (false=0=unselected)
+        TextView dow = (TextView) view;
+        String thisDow = dow.getText().toString();
+        if (thisDow.equals("Su")) {
+            daysOfWeek[0] = !daysOfWeek[0];
+        } else if (thisDow.equals("Mo")) {
+            daysOfWeek[1] = !daysOfWeek[1];
+        } else if (thisDow.equals("Tu")) {
+            daysOfWeek[2] = !daysOfWeek[2];
+        } else if (thisDow.equals("We")) {
+            daysOfWeek[3] = !daysOfWeek[3];
+        } else if (thisDow.equals("Th")) {
+            daysOfWeek[4] = !daysOfWeek[4];
+        } else if (thisDow.equals("Fr")) {
+            daysOfWeek[5] = !daysOfWeek[5];
+        } else if (thisDow.equals("Sa")) {
+            daysOfWeek[6] = !daysOfWeek[6];
+        }
+    }
+
+    /* generate abbr string for days of the week*/
+    public String daysOfWeekToString(){
+        String dow="";
+        if(daysOfWeek[0]) dow += "Su,";
+        if(daysOfWeek[1]) dow += "Mo,";
+        if(daysOfWeek[2]) dow += "Tu,";
+        if(daysOfWeek[3]) dow += "We,";
+        if(daysOfWeek[4]) dow += "Th,";
+        if(daysOfWeek[5]) dow += "Fr,";
+        if(daysOfWeek[6]) dow += "Sa,";
+
+        if(dow.equals("")) dow = "repeat once";
+        else if(dow.equals("Su,Mo,Tu,We,Th,Fr,Sa,")) dow = "everyday";
+        else dow = dow.substring(0, dow.length()-1); //because last char will be a comma ","
+        return dow;
     }
 
     /* increment each day by 1 */
@@ -327,7 +309,6 @@ public class SettingPage extends ActionBarActivity {
                 }
             }
         }
-
         //volume preferences
         phone_sb.setProgress(intent.getIntExtra(RequestHandler.PHONE, audioManager.getStreamMaxVolume(AudioManager.STREAM_RING)));
         notification_sb.setProgress(intent.getIntExtra(RequestHandler.NOTIFICATION, audioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION)));
@@ -367,53 +348,6 @@ public class SettingPage extends ActionBarActivity {
         //vibration
         vibration = (CheckBox) findViewById(R.id.uS_cb_vibrate);
         initCheckBoxVibration(vibration);
-    }
-
-    private String timeTo24HrString(TimePicker timePicker){
-       return (timePicker.getCurrentHour().toString() + ":" + timePicker.getCurrentMinute().toString());
-    }
-
-    /* handle day of the week button click from UI */
-    public void dowClick(View view){
-        //change view background
-        if (view.getBackground().getConstantState() == getResources().getDrawable(R.drawable.border_unselected).getConstantState())
-            view.setBackgroundResource(R.drawable.border_selected);
-        else view.setBackgroundResource(R.drawable.border_unselected);
-        //update dayOfWeek bool (false=0=unselected)
-        TextView dow = (TextView) view;
-        String thisDow = dow.getText().toString();
-        if (thisDow.equals("Su")) {
-            daysOfWeek[0] = !daysOfWeek[0];
-        } else if (thisDow.equals("Mo")) {
-            daysOfWeek[1] = !daysOfWeek[1];
-        } else if (thisDow.equals("Tu")) {
-            daysOfWeek[2] = !daysOfWeek[2];
-        } else if (thisDow.equals("We")) {
-            daysOfWeek[3] = !daysOfWeek[3];
-        } else if (thisDow.equals("Th")) {
-            daysOfWeek[4] = !daysOfWeek[4];
-        } else if (thisDow.equals("Fr")) {
-            daysOfWeek[5] = !daysOfWeek[5];
-        } else if (thisDow.equals("Sa")) {
-            daysOfWeek[6] = !daysOfWeek[6];
-        }
-    }
-
-    /* generate abbr string for days of the week*/
-    public String daysOfWeekToString(){
-        String dow="";
-        if(daysOfWeek[0]) dow += "Su,";
-        if(daysOfWeek[1]) dow += "Mo,";
-        if(daysOfWeek[2]) dow += "Tu,";
-        if(daysOfWeek[3]) dow += "We,";
-        if(daysOfWeek[4]) dow += "Th,";
-        if(daysOfWeek[5]) dow += "Fr,";
-        if(daysOfWeek[6]) dow += "Sa,";
-
-        if(dow.equals("")) dow = "repeat once";
-        else if(dow.equals("Su,Mo,Tu,We,Th,Fr,Sa,")) dow = "everyday";
-        else dow = dow.substring(0, dow.length()-1); //because last char will be a comma ","
-        return dow;
     }
 
     /* set seekbar listener and image update*/
@@ -478,17 +412,15 @@ public class SettingPage extends ActionBarActivity {
         media_sb.setProgress(0);
     }
 
-    /* return true if volumes are set to silent*/
+    /* return true if volumes are set to silent */
     public boolean isSilent(){
         return (phone_sb.getProgress()==0 && notification_sb.getProgress()==0 && feedback_sb.getProgress()==0 && media_sb.getProgress()==0);
     }
 
-    private String generate12HourTime(String _from, String _to){
-        String timeFrame = changeTimeFormat12(Integer.parseInt(_from.split(":")[0]),
-                Integer.parseInt(_from.split(":")[1]));
-        timeFrame += " - " + changeTimeFormat12( Integer.parseInt(_to.split(":")[0]),
-                Integer.parseInt(_to.split(":")[1]));
-        return timeFrame;
+    private String generate12HourTime(String timeFrame){
+        String time = changeTimeFormat12(Integer.parseInt(timeFrame.split(":")[0]), Integer.parseInt(timeFrame.split(":")[1]));
+        time += " - " + changeTimeFormat12( Integer.parseInt(timeFrame.split(":")[3]), Integer.parseInt(timeFrame.split(":")[4]));
+        return time;
     }
     // Used to convert 24hr format to 12hr format with AM/PM values
     private String changeTimeFormat12(int hours, int mins) {
