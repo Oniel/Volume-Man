@@ -69,6 +69,7 @@
 
     <string name="toast_no_title">please enter a title for this time setting</string>
     <string name="toast_title_exists">a setting with this title already exists, please chose another title</string>
-    <string name="toast_invalid_timeframe">the start/end time frame entered is invalid</string>
+    <string name="toast_timeframe_invalid">the start/end time frame entered is invalid, </string>
+    <string name="toast_timeframe_conflict">the entered time frame conflicts with an existing setting titled: </string>
     <string name="toast_error">an error occurred</string>
 </resources>

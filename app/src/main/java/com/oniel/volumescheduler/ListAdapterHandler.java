@@ -71,7 +71,7 @@ public class ListAdapterHandler extends BaseAdapter {
         title.setText(item.getTitle());
 
         //time
-        time.setText(item.getTimeFrame());
+        time.setText(item.getTime());
 
         // days of the week
         dow.setText(item.getDaysofweek());
@@ -90,7 +90,6 @@ public class ListAdapterHandler extends BaseAdapter {
         convertView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                System.out.println("IN here");
                 //create a dialog to be presented
                 AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                 builder.setTitle(title.getText());
@@ -129,24 +128,15 @@ public class ListAdapterHandler extends BaseAdapter {
         Intent intent = new Intent(activity, SettingPage.class);
         intent.putExtra(RequestHandler.REQUEST_CODE, RequestHandler.REQ_UPDATE_SETTING);
         intent.putExtra(RequestHandler.TITLE, item.getTitle());
-//NOTE delete if not used
-//        intent.putExtra(RequestHandler.START_HOUR, item.getFromHour());
-//        intent.putExtra(RequestHandler.START_MIN, item.getFromMin());
-//        intent.putExtra(RequestHandler.END_HOUR, item.getToHour());
-//        intent.putExtra(RequestHandler.END_MIN, item.getToMin());
-        intent.putExtra(RequestHandler.STARTTIME, item.getStartTime());
-        intent.putExtra(RequestHandler.ENDTIME, item.getEndTime());
+        intent.putExtra(RequestHandler.TIME, item.getTime());
+        intent.putExtra(RequestHandler.TIMEFRAME, item.getTimeFrame());
         intent.putExtra(RequestHandler.DAYSOFWEEK, item.getDaysofweek());
         intent.putExtra(RequestHandler.PHONE, item.getPhone());
         intent.putExtra(RequestHandler.NOTIFICATION, item.getNotification());
         intent.putExtra(RequestHandler.FEEDBACK, item.getFeedback());
         intent.putExtra(RequestHandler.MEDIA, item.getMedia());
         intent.putExtra(RequestHandler.VIBRATION, item.getVibration());
-//NOTE delete if not used
-//        intent.putExtra(RequestHandler.PHONE_VIBRATION, item.getPhoneVibration());
-//        intent.putExtra(RequestHandler.NOTIFICATION_VIBRATION, item.getNotificationVibration());
-//        intent.putExtra(RequestHandler.FEEDBACK_VIBRATION, item.getFeedbackVibration());
-//        intent.putExtra(RequestHandler.MEDIA_VIBRATION, item.getMediaVibration());
+
         return intent;
     }
 }

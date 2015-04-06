@@ -7,27 +7,35 @@
 */
 package com.oniel.volumescheduler;
 
+import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.media.AudioManager;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.NumberPicker;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +48,7 @@ public class SettingPage extends ActionBarActivity {
     private AudioManager audioManager; // device audio stream
     private final static String PREF = "PREF";
 
-    private TextView title;
+    private EditText title;
     private TimePicker startTime_tp;
     private TimePicker endTime_tp;
     private boolean[] daysOfWeek; //0-sun, 1-mon,...
@@ -50,10 +58,16 @@ public class SettingPage extends ActionBarActivity {
     private SeekBar media_sb;
     private CheckBox vibration;
 
-    //for conflict specification, move to another class??
-    public class timeFrameConflictObj {
-        boolean conflict = false;
-        String conflictTitle = "";
+    private String origTitle;
+
+    /* conflict class */
+    public class Conflict {
+        boolean conflict;
+        String message;
+        Conflict(){
+            conflict = false;
+            message = "";
+        }
     }
 
 
@@ -121,22 +135,25 @@ public class SettingPage extends ActionBarActivity {
             String timeFrame = getTimeFrame(startTime_tp, endTime_tp, daysOfWeekStr);
 
             if(startTime.equals(endTime)){ //time frames are the same
-                Toast.makeText(this, R.string.toast_invalid_timeframe, Toast.LENGTH_LONG).show(); return false;
+                Toast.makeText(this, R.string.toast_timeframe_invalid, Toast.LENGTH_LONG).show(); return false;
             }
 
             //check database for conflicting time frames with this new setting
-            timeFrameConflictObj obj = timeFramesConflict(timeFrame);
-            if(obj.conflict){
-                //TODO return obj.conflictTitle in toast
-                Toast.makeText(this, R.string.toast_invalid_timeframe, Toast.LENGTH_LONG).show(); return false;
-            }
+//            Conflict conflict = checkTimeFrameConfliction(timeframe);
+//            if(conflict.conflict){
+//                Toast.makeText(this, R.string.toast_timeframe_conflict + conflict.message, Toast.LENGTH_LONG).show(); return false;
+//            }
+
+            String time = generate12HourTime(startTime, endTime);
+            System.out.println("settingpage: " + time);
 
             /* no errors, return new setting as intent to MainPage */
             Intent resultIntent = new Intent();
-            resultIntent.putExtra(RequestHandler.TITLE, title.getText().toString());
-            resultIntent.putExtra(RequestHandler.STARTTIME, startTime);
-            resultIntent.putExtra(RequestHandler.ENDTIME, endTime);
+            if(REQ_CODE == RequestHandler.REQ_UPDATE_SETTING)
+                resultIntent.putExtra(RequestHandler.TITLE, origTitle + ":" + title.getText().toString());
+            else resultIntent.putExtra(RequestHandler.TITLE, title.getText().toString());
             resultIntent.putExtra(RequestHandler.DAYSOFWEEK, daysOfWeekStr);
+            resultIntent.putExtra(RequestHandler.TIME, time);
             resultIntent.putExtra(RequestHandler.TIMEFRAME, timeFrame);
             resultIntent.putExtra(RequestHandler.PHONE, phone_sb.getProgress());
             resultIntent.putExtra(RequestHandler.NOTIFICATION, notification_sb.getProgress());
@@ -148,18 +165,72 @@ public class SettingPage extends ActionBarActivity {
         }
     }
 
-    /* validate time frame with existing volume setting*/
-    private timeFrameConflictObj timeFramesConflict(String timeframe){
-        timeFrameConflictObj obj = new timeFrameConflictObj();
-        //check new setting timeframe with existing entries for conflicting schedules
+    /* time frame check procedure
+       if single day
+            if new time frame hours falls within existing time frame hours
+            else if time frame hours
+       if multiday
+
+
+    */
+
+    /* checks database for any existing setting who's timeframe interferes with the parameter THIS IS GOING TO BE A BITCH TO DO */
+    private Conflict checkTimeFrameConfliction(String timeframe){
+        //time variables of the new setting
+        int newStartHour = Integer.parseInt(timeframe.split(":")[0]);
+        int newStartMin = Integer.parseInt(timeframe.split(":")[1]);
+        int newEndHour = Integer.parseInt(timeframe.split(":")[3]);
+        int newEndMin = Integer.parseInt(timeframe.split(":")[4]);
+
         List<SettingObject> settingObjectList = database.getAllRows();
-        for(SettingObject item : settingObjectList){
-            //TODO LEFT OFF check time conflicts
+        //perform conflict check for each saved item in the database
+        for(SettingObject setting : settingObjectList){
+            //time variables of the existing setting
+            int oldStartHour = Integer.parseInt(setting.getTimeFrame().split(":")[0]);
+            int oldStartMin = Integer.parseInt(setting.getTimeFrame().split(":")[1]);
+            int oldEndHour = Integer.parseInt(setting.getTimeFrame().split(":")[3]);
+            int oldEndMin = Integer.parseInt(setting.getTimeFrame().split(":")[4]);
+
+            //single day
+            if(isTimeFrameSingleDay(timeframe)){
+                //falls w/in existing time frame (broke into multiple else if's for readability
+                if((oldStartHour<newStartHour && newStartHour<oldEndHour) || (oldStartHour<newEndHour && newEndHour<oldEndHour))
+                    return dowConfliction(timeframe, setting.getTimeFrame(), setting.getTitle());
+                else if(oldStartHour==newStartHour && oldStartMin<newStartMin)
+                    return dowConfliction(timeframe, setting.getTimeFrame(), setting.getTitle());
+                else if(oldStartHour==newEndHour && oldStartMin<newEndMin)
+                    return dowConfliction(timeframe, setting.getTimeFrame(), setting.getTitle());
+                else if(oldEndHour==newStartHour && newStartMin<oldStartMin)
+                    return dowConfliction(timeframe, setting.getTimeFrame(), setting.getTitle());
+                else if(oldEndHour==newEndHour && newEndMin<oldEndHour)
+                    return dowConfliction(timeframe, setting.getTimeFrame(), setting.getTitle());
+                else
+                    return new Conflict(); //returns conflict.conflict=false
+            //multiday -oposite of singe day hour check
+            } else {
+                //fals w/in existing time frame
+                //2230 0030 -- 2230
+
+            }
+
         }
-        return obj;
+        return new Conflict();
     }
 
-    //generate a time frame: startHour:startMinute:startDaysOfWeek`endHour:endMinute:endDaysOfWeek
+    /* check to see if days of the week conflict */
+    //days, everyday, repeat once
+    private Conflict dowConfliction(String newTimeFrame, String oldTimeFrame, String oldTitle){
+        Conflict conflict = new Conflict();
+
+        return conflict;
+    }
+
+    /* return true if single day, return false if multiday */
+    private boolean isTimeFrameSingleDay(String timeframe){
+        return timeframe.split(":")[2].equals(timeframe.split(":")[5]);
+    }
+
+    //generate a time frame: startHour:startMinute:startDaysOfWeek:endHour:endMinute:endDaysOfWeek
     private String getTimeFrame(TimePicker startTime, TimePicker endTime, String dows){
         int sH = startTime.getCurrentHour();
         int sM = startTime.getCurrentMinute();
@@ -169,20 +240,19 @@ public class SettingPage extends ActionBarActivity {
         //handle single day and multiday timeframe setup
         if(sH == eH){
             if(sM < eM){        //case 1: single day
-                timeframe = String.valueOf(sH)+":"+String.valueOf(sM)+":"+dows+"`"+String.valueOf(eH)+":"+String.valueOf(eM)+":"+dows;
+                timeframe = String.valueOf(sH)+":"+String.valueOf(sM)+":"+dows+":"+String.valueOf(eH)+":"+String.valueOf(eM)+":"+dows;
             } else if (sM > eM){    //case 1: multiday
-                timeframe = String.valueOf(sH)+":"+String.valueOf(sM)+":"+dows+"`"+String.valueOf(eH)+":"+String.valueOf(eM)+":"+increaseDOWby1(dows);
+                timeframe = String.valueOf(sH)+":"+String.valueOf(sM)+":"+dows+":"+String.valueOf(eH)+":"+String.valueOf(eM)+":"+increaseDOWby1(dows);
             }
         } else if(sH < eH){     //case 1: single day
-            timeframe = String.valueOf(sH)+":"+String.valueOf(sM)+":"+dows+"`"+String.valueOf(eH)+":"+String.valueOf(eM)+":"+dows;
+            timeframe = String.valueOf(sH)+":"+String.valueOf(sM)+":"+dows+":"+String.valueOf(eH)+":"+String.valueOf(eM)+":"+dows;
         } else if (sH > eH){    //case 1: multiday
-            timeframe = String.valueOf(sH)+":"+String.valueOf(sM)+":"+dows+"`"+String.valueOf(eH)+":"+String.valueOf(eM)+":"+increaseDOWby1(dows);
+            timeframe = String.valueOf(sH)+":"+String.valueOf(sM)+":"+dows+":"+String.valueOf(eH)+":"+String.valueOf(eM)+":"+increaseDOWby1(dows);
         }
         return timeframe;
     }
 
-
-    /* increment each day by 1*/
+    /* increment each day by 1 */
     private String increaseDOWby1(String dow){
         if(dow.contains(",")){
             String dowArr[] = dow.split(",");
@@ -203,16 +273,75 @@ public class SettingPage extends ActionBarActivity {
 
     /* set existing view values from intent */
     private void setViewsFromIntent(Intent intent){
-        //TODO get stuff from intent and initialize views
-        title.setText(getIntent().getStringExtra(RequestHandler.TITLE));
+        title.setText(intent.getStringExtra(RequestHandler.TITLE));
+        origTitle = intent.getStringExtra(RequestHandler.TITLE);
+        //time pickers
+        startTime_tp.setCurrentHour(Integer.parseInt(intent.getStringExtra(RequestHandler.TIMEFRAME).split(":")[0]));
+        startTime_tp.setCurrentMinute(Integer.parseInt(intent.getStringExtra(RequestHandler.TIMEFRAME).split(":")[1]));
+        endTime_tp.setCurrentHour(Integer.parseInt(intent.getStringExtra(RequestHandler.TIMEFRAME).split(":")[3]));
+        endTime_tp.setCurrentMinute(Integer.parseInt(intent.getStringExtra(RequestHandler.TIMEFRAME).split(":")[4]));
+        String dow = intent.getStringExtra(RequestHandler.TIMEFRAME).split(":")[2];
 
+        //days of the week
+        if(dow.equals("everyday")){
+            for(int i=0; i<daysOfWeek.length; i++)
+                daysOfWeek[i]=true;
+            findViewById(R.id.dow_sun).setBackgroundResource(R.drawable.border_selected);
+            findViewById(R.id.dow_mon).setBackgroundResource(R.drawable.border_selected);
+            findViewById(R.id.dow_tues).setBackgroundResource(R.drawable.border_selected);
+            findViewById(R.id.dow_wed).setBackgroundResource(R.drawable.border_selected);
+            findViewById(R.id.dow_thurs).setBackgroundResource(R.drawable.border_selected);
+            findViewById(R.id.dow_fri).setBackgroundResource(R.drawable.border_selected);
+            findViewById(R.id.dow_sat).setBackgroundResource(R.drawable.border_selected);
+        } else if(dow.contains(",")){
+            String dowArr[] = dow.split(",");
+            for (int i = 0; i < dowArr.length; i++) {
+                if (dowArr[i].equals("Su")) {
+                    daysOfWeek[0] = true;
+                    View view = findViewById(R.id.dow_sun);
+                    view.setBackgroundResource(R.drawable.border_selected);
+                } else if (dowArr[i].equals("Mo")) {
+                    daysOfWeek[1] = true;
+                    View view = findViewById(R.id.dow_mon);
+                    view.setBackgroundResource(R.drawable.border_selected);
+                } else if (dowArr[i].equals("Tu")) {
+                    daysOfWeek[2] = true;
+                    View view = findViewById(R.id.dow_tues);
+                    view.setBackgroundResource(R.drawable.border_selected);
+                } else if (dowArr[i].equals("We")) {
+                    daysOfWeek[3] = true;
+                    View view = findViewById(R.id.dow_wed);
+                    view.setBackgroundResource(R.drawable.border_selected);
+                } else if (dowArr[i].equals("Th")) {
+                    daysOfWeek[4] = true;
+                    View view = findViewById(R.id.dow_thurs);
+                    view.setBackgroundResource(R.drawable.border_selected);
+                } else if (dowArr[i].equals("Fr")) {
+                    daysOfWeek[5] = true;
+                    View view = findViewById(R.id.dow_fri);
+                    view.setBackgroundResource(R.drawable.border_selected);
+                } else if (dowArr[i].equals("Sa")) {
+                    daysOfWeek[6] = true;
+                    View view = findViewById(R.id.dow_sat);
+                    view.setBackgroundResource(R.drawable.border_selected);
+                }
+            }
+        }
+
+        //volume preferences
+        phone_sb.setProgress(intent.getIntExtra(RequestHandler.PHONE, audioManager.getStreamMaxVolume(AudioManager.STREAM_RING)));
+        notification_sb.setProgress(intent.getIntExtra(RequestHandler.NOTIFICATION, audioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION)));
+        feedback_sb.setProgress(intent.getIntExtra(RequestHandler.FEEDBACK, audioManager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM)));
+        media_sb.setProgress(intent.getIntExtra(RequestHandler.MEDIA, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)));
     }
 
     /* init views */
     private void initViews(){
-        title = (TextView) findViewById(R.id.uS_et_title);
+        title = (EditText) findViewById(R.id.uS_et_title);
         startTime_tp = (TimePicker) findViewById(R.id.uS_tp_start);
         endTime_tp = (TimePicker) findViewById(R.id.uS_tp_end);
+        setTimePickerTextWhite(startTime_tp);
+        setTimePickerTextWhite(endTime_tp);
         daysOfWeek = new boolean[7]; //inits to false
 
         //phone
@@ -282,7 +411,7 @@ public class SettingPage extends ActionBarActivity {
         if(daysOfWeek[6]) dow += "Sa,";
 
         if(dow.equals("")) dow = "repeat once";
-        else if(dow.equals("Su,Mo,Tu,We,Th,Fr,Sa")) dow = "everyday";
+        else if(dow.equals("Su,Mo,Tu,We,Th,Fr,Sa,")) dow = "everyday";
         else dow = dow.substring(0, dow.length()-1); //because last char will be a comma ","
         return dow;
     }
@@ -354,6 +483,36 @@ public class SettingPage extends ActionBarActivity {
         return (phone_sb.getProgress()==0 && notification_sb.getProgress()==0 && feedback_sb.getProgress()==0 && media_sb.getProgress()==0);
     }
 
+    private String generate12HourTime(String _from, String _to){
+        String timeFrame = changeTimeFormat12(Integer.parseInt(_from.split(":")[0]),
+                Integer.parseInt(_from.split(":")[1]));
+        timeFrame += " - " + changeTimeFormat12( Integer.parseInt(_to.split(":")[0]),
+                Integer.parseInt(_to.split(":")[1]));
+        return timeFrame;
+    }
+    // Used to convert 24hr format to 12hr format with AM/PM values
+    private String changeTimeFormat12(int hours, int mins) {
+        String timeSet = "";
+        if (hours > 12) {
+            hours -= 12;
+            timeSet = " PM";
+        } else if (hours == 0) {
+            hours += 12;
+            timeSet = " AM";
+        } else if (hours == 12)
+            timeSet = " PM";
+        else
+            timeSet = " AM";
+
+        String minutes = "";
+        if (mins < 10)
+            minutes = "0" + mins;
+        else
+            minutes = String.valueOf(mins);
+
+        return (hours + ":" + minutes + timeSet);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -374,5 +533,47 @@ public class SettingPage extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /* change timepicker color to white*/
+    public void setTimePickerTextWhite(TimePicker timePicker){
+        Resources system = Resources.getSystem();
+        int hour_numberpicker_id = system.getIdentifier("hour", "id", "android");
+        int minute_numberpicker_id = system.getIdentifier("minute", "id", "android");
+        int ampm_numberpicker_id = system.getIdentifier("amPm", "id", "android");
+
+        NumberPicker hour_numberpicker = (NumberPicker) timePicker.findViewById(hour_numberpicker_id);
+        NumberPicker minute_numberpicker = (NumberPicker) timePicker.findViewById(minute_numberpicker_id);
+        NumberPicker ampm_numberpicker = (NumberPicker) timePicker.findViewById(ampm_numberpicker_id);
+
+        set_numberpicker_text_colour(hour_numberpicker);
+        set_numberpicker_text_colour(minute_numberpicker);
+        set_numberpicker_text_colour(ampm_numberpicker);
+    }
+
+    private void set_numberpicker_text_colour(NumberPicker number_picker){
+        final int count = number_picker.getChildCount();
+
+        for(int i = 0; i < count; i++){
+            View child = number_picker.getChildAt(i);
+
+            try{
+                Field wheelpaint_field = number_picker.getClass().getDeclaredField("mSelectorWheelPaint");
+                wheelpaint_field.setAccessible(true);
+
+                ((Paint)wheelpaint_field.get(number_picker)).setColor(Color.WHITE);
+                ((EditText)child).setTextColor(Color.WHITE);
+                number_picker.invalidate();
+            }
+            catch(NoSuchFieldException e){
+                Log.w("setNumberPickerTxtColor", e);
+            }
+            catch(IllegalAccessException e){
+                Log.w("setNumberPickerTxtColor", e);
+            }
+            catch(IllegalArgumentException e){
+                Log.w("setNumberPickerTxtColor", e);
+            }
+        }
     }
 }

@@ -1,6 +1,16 @@
 package com.oniel.volumescheduler;
 
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.NumberPicker;
+import android.widget.TimePicker;
+
+import java.lang.reflect.Field;
 
 /*
 ********************************
@@ -22,16 +32,9 @@ public class RequestHandler {
 
     /* keys */
     public final static String TITLE = "TITLE";
-//NOTE delete if not used
-//    public final static String START_HOUR = "FROMHOUR";
-//    public final static String START_MIN = "FROMMIN";
-//    public final static String END_HOUR = "TOHOUR";
-//    public final static String END_MIN = "TOMIN";
-    public final static String STARTTIME = "STARTTIME";
-    public final static String ENDTIME = "ENDTIME";
-    public final static String TIMEFRAME = "TIMEFRAME";
+    public final static String TIMEFRAME = "TIMEFRAME"; //startHour:startMin:startDaysOfWeek:endHours:endMin:endDaysOfWeek
+    public final static String TIME = "HUMANTIMEFRAME"; //12 hour format: starttime<am|pm> - endtime<am|pm>
     public final static String DAYSOFWEEK = "DAYSOFWEEK";
-
     public final static String PHONE = "PHONE";
     public final static String NOTIFICATION = "NOTIFICATION";
     public final static String FEEDBACK = "FEEDBACK";
@@ -55,14 +58,7 @@ public class RequestHandler {
     public static SettingObject createSettingObjectFromIntent(Intent intent){
         SettingObject settingObject = new SettingObject();
         settingObject.setTitle(intent.getStringExtra(RequestHandler.TITLE));
-//NOTE delete if not used
-//        settingObject.setFromHour(intent.getIntExtra(RequestHandler.START_HOUR, 0));
-//        settingObject.setFromMin(intent.getIntExtra(RequestHandler.START_MIN, 0));
-//        settingObject.setToHour(intent.getIntExtra(RequestHandler.END_HOUR, 0));
-//        settingObject.setToMin(intent.getIntExtra(RequestHandler.END_MIN, 0));
-
-        settingObject.setStartTime(intent.getStringExtra(RequestHandler.STARTTIME));
-        settingObject.setEndTime(intent.getStringExtra(RequestHandler.ENDTIME));
+        settingObject.setTime(intent.getStringExtra(RequestHandler.TIME));
         settingObject.setTimeFrame(intent.getStringExtra(RequestHandler.TIMEFRAME));//later let updateSetting handle this
         settingObject.setDaysofweek(intent.getStringExtra(RequestHandler.DAYSOFWEEK));
         settingObject.setPhone(intent.getIntExtra(RequestHandler.PHONE, 0));

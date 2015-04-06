@@ -28,11 +28,7 @@ public class DatabaseHandler extends SQLiteOpenHelper{
     //table: VolumeSettings
     private static final String COL_ID = "id";
     private static final String COL_TITLE = "title";
-
-    private static final String COL_FROM_HOUR = "from_hour";
-    private static final String COL_FROM_MIN = "from_min";
-    private static final String COL_TO_HOUR = "to_hour";
-    private static final String COL_TO_MIN = "to_min";
+    private static  final String COL_TIME = "time";
     private static final String COL_TIMEFRAME = "time_frame";
     private static final String COL_DAYSOFWEEK = "days_of_week";
     private static final String COL_PHONE = "phone";
@@ -51,17 +47,14 @@ public class DatabaseHandler extends SQLiteOpenHelper{
                 + TABLE_VOLUMESETTINGS + " ( "
                 + COL_ID + " INTEGER PRIMARY KEY, "
                 + COL_TITLE + " TEXT, "
-                + COL_FROM_HOUR + " INTEGER, "
-                + COL_FROM_MIN + " INTEGER, "
-                + COL_TO_HOUR + " INTEGER,"
-                + COL_TO_MIN + " INTEGER,"
+                + COL_TIME + " TEXT, "
                 + COL_TIMEFRAME + " TEXT, "
                 + COL_DAYSOFWEEK + " TEXT, "
                 + COL_PHONE + " INTEGER, "
                 + COL_NOTIFICATION + " INTEGER, "
                 + COL_FEEDBACK + " INTEGER, "
                 + COL_MEDIA + " INTEGER,"
-                + COL_VIBRATION + " INTEGER, "
+                + COL_VIBRATION + " INTEGER "
                 + ")";
         db.execSQL(CREATE_VOLUMESETTINGS_TABLE);
     }
@@ -97,17 +90,14 @@ public class DatabaseHandler extends SQLiteOpenHelper{
                 SettingObject settingObject = new SettingObject();
                 settingObject.setId(cursor.getInt(0));
                 settingObject.setTitle(cursor.getString(1));
-                settingObject.setFromHour(cursor.getInt(2));
-                settingObject.setFromMin(cursor.getInt(3));
-                settingObject.setToHour(cursor.getInt(4));
-                settingObject.setToMin(cursor.getInt(5));
-                settingObject.setTimeFrame(cursor.getString(6));
-                settingObject.setDaysofweek(cursor.getString(7));
-                settingObject.setPhone(cursor.getInt(8));
-                settingObject.setNotification(cursor.getInt(9));
-                settingObject.setFeedback(cursor.getInt(10));
-                settingObject.setMedia(cursor.getInt(11));
-                settingObject.setVibration(cursor.getInt(12)==1); //there is no boolean
+                settingObject.setTime(cursor.getString(2));
+                settingObject.setTimeFrame(cursor.getString(3));
+                settingObject.setDaysofweek(cursor.getString(4));
+                settingObject.setPhone(cursor.getInt(5));
+                settingObject.setNotification(cursor.getInt(6));
+                settingObject.setFeedback(cursor.getInt(7));
+                settingObject.setMedia(cursor.getInt(8));
+                settingObject.setVibration(cursor.getInt(9)==1);//no boolean
 
                 settingsList.add(settingObject);
             } while (cursor.moveToNext());
@@ -117,50 +107,47 @@ public class DatabaseHandler extends SQLiteOpenHelper{
 
     public boolean rowExistence(String _title){
         SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT COUNT(*) AS FROM " + TABLE_VOLUMESETTINGS + " WHERE title='" + _title + "';";
+        String sql = "SELECT COUNT(*) AS count FROM " + TABLE_VOLUMESETTINGS + " WHERE title='" + _title + "';";
+        System.out.println(sql);
         Cursor cursor = db.rawQuery(sql, null);
-        if(cursor.getInt(0) == 0) return false;
-        return true;
+        if(cursor.getColumnIndex("count") == 0) return false;
+        else return true;
     }
 
     public void addRow(SettingObject settingObject){
         ContentValues values = new ContentValues();
         values.put(COL_TITLE, settingObject.getTitle());
-        values.put(COL_FROM_HOUR, settingObject.getFromHour());
-        values.put(COL_FROM_MIN, settingObject.getFromMin());
-        values.put(COL_TO_HOUR, settingObject.getToHour());
-        values.put(COL_TO_MIN, settingObject.getToMin());
+        values.put(COL_TIME, settingObject.getTime());
         values.put(COL_TIMEFRAME, settingObject.getTimeFrame());
         values.put(COL_DAYSOFWEEK, settingObject.getDaysofweek());
         values.put(COL_PHONE, settingObject.getPhone());
         values.put(COL_NOTIFICATION, settingObject.getNotification());
         values.put(COL_FEEDBACK, settingObject.getFeedback());
         values.put(COL_MEDIA, settingObject.getMedia());
-        values.put(COL_VIBRATION, settingObject.getVibration());
+        int vibration = (settingObject.getVibration()) ? 1 : 0;
+        values.put(COL_VIBRATION, vibration);
         SQLiteDatabase db = this.getWritableDatabase();
         db.insert(TABLE_VOLUMESETTINGS, null, values);
         db.close();
     }
 
-    public int updateRow(SettingObject settingObject){
+    public int updateRow(SettingObject settingObject, String origTitle){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COL_TITLE, settingObject.getTitle());
-        values.put(COL_FROM_HOUR, settingObject.getFromHour());
-        values.put(COL_FROM_MIN, settingObject.getFromMin());
-        values.put(COL_TO_HOUR, settingObject.getToHour());
-        values.put(COL_TO_MIN, settingObject.getToMin());
+        values.put(COL_TIME, settingObject.getTime());
         values.put(COL_TIMEFRAME, settingObject.getTimeFrame());
         values.put(COL_DAYSOFWEEK, settingObject.getDaysofweek());
         values.put(COL_PHONE, settingObject.getPhone());
         values.put(COL_NOTIFICATION, settingObject.getNotification());
         values.put(COL_FEEDBACK, settingObject.getFeedback());
         values.put(COL_MEDIA, settingObject.getMedia());
-        values.put(COL_VIBRATION, settingObject.getVibration());
+        int vibration = (settingObject.getVibration()) ? 1 : 0;
+        values.put(COL_VIBRATION, vibration);
 
         // updating row
         return db.update(TABLE_VOLUMESETTINGS, values, COL_TITLE + " = ?",
-                new String[] { String.valueOf(settingObject.getTitle()) });
+                new String[] { origTitle });
     }
 
     public void deleteRow(SettingObject settingObject){

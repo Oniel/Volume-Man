@@ -11,12 +11,7 @@ public class SettingObject {
     /* object attributes */
     private int id;
     private String title;
-    //NOTE delete if not used
-    //private int fromHour, fromMin;
-    //private int toHour, toMin;
-
-    private String startTime;
-    private String endTime;
+    private String time;
     private String timeFrame;
     private String daysofweek;
     private int phone;
@@ -35,29 +30,8 @@ public class SettingObject {
         return title;
     }
 
-//NOTE delete if not used
-//    public int getFromHour() {
-//        return fromHour;
-//    }
-//
-//    public int getFromMin() {
-//        return fromMin;
-//    }
-//
-//    public int getToHour() {
-//        return toHour;
-//    }
-//
-//    public int getToMin() {
-//        return toMin;
-//    }
-
-    public String getStartTime(){
-        return startTime;
-    }
-
-    public String getEndTime() {
-        return endTime;
+    public String getTime() {
+        return time;
     }
 
     public String getTimeFrame() {
@@ -99,29 +73,8 @@ public class SettingObject {
         this.title = title;
     }
 
-//NOTE delete if not used
-//    public void setFromHour(int fromHour) {
-//        this.fromHour = fromHour;
-//    }
-//
-//    public void setFromMin(int fromMin) {
-//        this.fromMin = fromMin;
-//    }
-//
-//    public void setToHour(int toHour) {
-//        this.toHour = toHour;
-//    }
-//
-//    public void setToMin(int toMin) {
-//        this.toMin = toMin;
-//    }
-
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
-    }
-
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public void setTimeFrame(String timeFrame) {

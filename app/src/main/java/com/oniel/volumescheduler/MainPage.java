@@ -48,8 +48,11 @@ public class MainPage extends ActionBarActivity {
         db = new DatabaseHandler(this);
 
         /* populate the list view with db entries */
-        if(db.getRowsCount() != 0)
+        if(db.getRowsCount() != 0) {
             updateListView();
+            System.out.println("getRowsCOUNT != 0");
+        }
+        else System.out.println("getRowsCOUNT == 0");
 
         /* handle 'create a new setting' button click */
         btn_newSettings = (Button) findViewById(R.id.btn_new_setting);
@@ -103,25 +106,16 @@ public class MainPage extends ActionBarActivity {
 
         //values returned for creating a new setting
         if (resultCode == RequestHandler.REQ_NEW_SETTING) {
-           /*
-                create system service request
-            */
-            System.out.println("New Setting Call");
-
             SettingObject settingObject = RequestHandler.createSettingObjectFromIntent(intent);
             db.addRow(settingObject); // add row to the database
             updateListView(); //regets rows from db and refills listview
-        }
+
         //if returning values to update for existing setting
-        else if (resultCode == RequestHandler.REQ_UPDATE_SETTING) {
-            /*
-                delete old system service request
-                create a new system service request
-             */
-            System.out.println("Update Setting Call");
+        } else if (resultCode == RequestHandler.REQ_UPDATE_SETTING) {
             SettingObject settingObject = RequestHandler.createSettingObjectFromIntent(intent);
-            //FIXME updateRow is not updating if the name of the title has been changed (obviously, because new name isn't in row) handle this
-            db.updateRow(settingObject); // add row to the database
+            String origTitle = settingObject.getTitle().split(":")[0]; //<origTitle>:<newTitle>
+            settingObject.setTitle(settingObject.getTitle().split(":")[1]);
+            db.updateRow(settingObject, origTitle); // add row to the database
             updateListView(); //re-gets rows from db and refills listview
         } else if (resultCode == RequestHandler.REQ_NO_RESULT){
             Toast.makeText(this, "no setting was added", Toast.LENGTH_SHORT).show();

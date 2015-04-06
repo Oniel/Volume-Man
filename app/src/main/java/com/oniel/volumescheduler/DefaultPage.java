@@ -96,8 +96,6 @@ public class DefaultPage extends ActionBarActivity {
                     }
                 }
 
-
-
                 Toast.makeText(context, R.string.toast_default_set, Toast.LENGTH_SHORT).show();
                 finish();
             }
